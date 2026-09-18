@@ -1,0 +1,42 @@
+{% include 'partials/news_runtime_status.html' %}
+{% if news.turkish_telegram_pending %}
+<aside style="padding:12px;margin:16px 0;border:1px solid #cbd5e1;border-radius:8px;">
+    <strong>Türk kaynak bildirimi Telegram kuyruğunda</strong>
+    <p>AI sonucu beklenmeden özgün başlık ve bağlantı gönderilecek.</p>
+    {% if news.telegram_last_error %}<p>{{ news.telegram_last_error }}</p>{% endif %}
+</aside>
+{% endif %}
+{% if news.news_value is defined and news.news_value is not none %}
+<details style="padding:12px;margin:16px 0;border:1px solid #d1d5db;border-radius:8px;">
+    <summary>Haber değeri: {{ news.news_value }}/100 — neden?</summary>
+    <p>{{ news.news_value_reason }}</p>
+    <p>Bu bir öncelik önerisidir; AI önem puanı ve doğruluk kontrolünden ayrıdır.</p>
+</details>
+{% endif %}
+{% if news.fact_check_notes %}
+<aside aria-label="Doğruluk kontrolü" style="padding:16px;margin:16px 0;border:1px solid #b45309;border-radius:8px;background:#fff7ed;">
+    <strong>Kaynakla karşılaştırma gerekiyor</strong>
+    <p style="white-space:pre-line;">{{ news.fact_check_notes }}</p>
+    <p>Bu otomatik uyarı kesin hata kararı değildir. Yayımlamadan önce kaynak metnini kontrol edin.</p>
+</aside>
+{% endif %}
+{% if news.status == 'ai_skipped' %}
+<aside aria-label="AI işlem açıklaması" style="padding:16px;margin:16px 0;border:1px solid #d4b564;border-radius:8px;background:#fff8e1;color:#493b13;">
+    <strong>Bu haber neden otomatik işlenmedi?</strong>
+    <p>{{ news.ai_last_error or 'Bu kayıt otomatik AI kuyruğu dışında. Kaynak metnini ve haberin tarihini kontrol edin.' }}</p>
+    <p>Haber silinmedi. Kaynağı inceleyebilir, metni kendiniz düzenleyebilirsiniz.</p>
+</aside>
+{% endif %}
+{% if news.group_parent %}
+<p><a href="/editor/{{ news.group_parent.id }}">Ana habere git: {{ news.group_parent.source }} — {{ news.group_parent.title }}</a></p>
+{% endif %}
+{% if news.related_sources %}
+<details style="padding:12px;margin:16px 0;border:1px solid #d1d5db;border-radius:8px;">
+    <summary>Bu haber grubundaki {{ news.related_sources|length }} ek kaynak</summary>
+    <ul>
+        {% for related in news.related_sources %}
+        <li><a href="/editor/{{ related.id }}">{{ related.source }} — {{ related.title }}</a></li>
+        {% endfor %}
+    </ul>
+</details>
+{% endif %}

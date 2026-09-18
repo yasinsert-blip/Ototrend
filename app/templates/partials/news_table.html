@@ -1,0 +1,888 @@
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th width="45">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="selectAll">
+                        </th>
+
+                        <th width="70">
+                            ID
+                        </th>
+
+                        <th>
+                            Başlık
+                        </th>
+
+                        <th class="editor-optional-column" width="120">
+                            Marka
+                        </th>
+
+                        <th class="editor-optional-column" width="140">
+                            Kategori
+                        </th>
+
+                        <th width="140">
+                            Kaynak
+                        </th>
+
+                        <th width="140">
+                            Durum
+                        </th>
+
+                        <th width="90">
+                            Önem
+                        </th>
+
+                        <th class="editor-optional-column" width="180">
+                            Tarih
+                        </th>
+
+                        <th
+                            class="text-end"
+                            width="220">
+
+                            İşlemler
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for news in news_list %}
+
+                    <!-- ================================================== -->
+                    <!-- HABER SATIRI -->
+                    <!-- ================================================== -->
+
+                    <tr>
+
+                        <td>
+
+                            <input
+                                class="form-check-input news-check"
+                                type="checkbox"
+                                name="news_ids"
+                                value="{{ news.id }}">
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                #{{ news.id }}
+                            </strong>
+
+                        </td>
+
+
+                        <!-- BAŞLIK -->
+
+                        <td>
+
+                            <div
+                                class="fw-bold fs-6 news-title"
+                                style="
+                                    display:-webkit-box;
+                                    -webkit-line-clamp:2;
+                                    -webkit-box-orient:vertical;
+                                    overflow:hidden;
+                                ">
+
+                                {{ news.translated_title or news.title }}
+
+                            </div>
+
+
+                            {% include 'partials/news_runtime_status.html' %}
+                            {% if news.news_value is defined and news.news_value is not none %}
+                            <details class="small mt-2">
+                                <summary>Haber değeri: {{ news.news_value }}/100</summary>
+                                {{ news.news_value_reason }}. Otomatik öncelik önerisidir; doğruluk puanı değildir.
+                            </details>
+                            {% endif %}
+                            {% if news.fact_check_notes %}
+                            <div class="small text-danger mt-2">Kaynak doğrulaması gerekiyor — editör incelemesi</div>
+                            {% endif %}
+                            {% if news.related_sources %}
+                            <details class="small mt-2">
+                                <summary>{{ news.related_sources|length }} ek kaynak</summary>
+                                {% for related in news.related_sources %}
+                                <div><a href="/editor/{{ related.id }}">{{ related.source }} — {{ related.title }}</a></div>
+                                {% endfor %}
+                            </details>
+                            {% endif %}
+                            {% if news.duplicate_of_id %}
+                            <a class="small" href="/editor/{{ news.duplicate_of_id }}">Ana haber #{{ news.duplicate_of_id }}</a>
+                            {% endif %}
+                            {% if news.status == 'ai_skipped' and news.ai_last_error %}
+                            <div class="small text-warning mt-2">{{ news.ai_last_error }}</div>
+                            {% endif %}
+
+                            {% if news.summary %}
+
+                                <div
+                                    class="small text-muted mt-2">
+
+                                    {{ news.summary[:120] }}...
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div
+                                class="d-flex flex-wrap gap-1 mt-2">
+
+                                {% if news.brand %}
+
+                                    <span
+                                        class="badge bg-light text-dark border">
+
+                                        🚗 {{ news.brand }}
+
+                                    </span>
+
+                                {% endif %}
+
+
+                                {% if news.category %}
+
+                                    <span
+                                        class="badge bg-primary-subtle text-primary border">
+
+                                        📂 {{ news.category }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- MARKA -->
+
+                        <td class="editor-optional-column">
+
+                            {% if news.brand %}
+
+                                <span
+                                    class="badge bg-light text-dark border">
+
+                                    {{ news.brand }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- KATEGORİ -->
+
+                        <td class="editor-optional-column">
+
+                            {% if news.category %}
+
+                                <span
+                                    class="badge bg-primary-subtle text-primary border">
+
+                                    {{ news.category }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- KAYNAK -->
+
+                        <td>
+
+                            {{ news.source }}
+
+                        </td>
+
+
+                        <!-- DURUM -->
+
+                        <td>
+
+                            {% if news.status == "new" %}
+
+                                <span class="badge bg-secondary">
+                                    Yeni
+                                </span>
+
+                            {% elif news.status == "ai_pending" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    AI Bekliyor
+                                </span>
+
+                            {% elif news.status == "ai_skipped" %}
+
+                                <span class="badge bg-secondary">AI Atlandı</span>
+
+                            {% elif news.status == "ai_error" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    AI Yeniden Denenecek
+                                </span>
+
+                            {% elif news.status == "ai_failed" %}
+
+                                <span class="badge bg-danger">
+                                    AI Manuel Kontrol
+                                </span>
+
+                            {% elif news.status == "ai_ready" %}
+
+                                <span class="badge bg-primary">
+                                    AI Hazır
+                                </span>
+
+                            {% elif news.status == "editor_review" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Editör
+                                </span>
+
+                            {% elif news.status == "instagram_draft" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Instagram Taslak
+                                </span>
+
+                            {% elif news.status == "instagram_ready" %}
+
+                                <span class="badge bg-success">
+                                    Instagram Hazır
+                                </span>
+
+                            {% elif news.status == "scheduled" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Planlandı
+                                </span>
+
+                            {% elif news.status == "published" %}
+
+                                <span class="badge bg-dark">
+                                    Yayında
+                                </span>
+
+                            {% elif news.status == "archived" %}
+
+                                <span class="badge bg-secondary">
+                                    Arşiv
+                                </span>
+
+                            {% elif news.status == "deleted" %}
+
+                                <span class="badge bg-danger">
+                                    Silindi
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-light text-dark">
+                                    {{ news.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ÖNEM -->
+
+                        <td>
+
+                            {% if news.importance is not none %}
+
+                                {% if news.importance >= 8 %}
+
+                                    <span class="badge bg-danger">
+                                        {{ news.importance }}/10
+                                    </span>
+
+                                {% elif news.importance >= 5 %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        {{ news.importance }}/10
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ news.importance }}/10
+                                    </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- TARİH -->
+
+                        <td class="editor-optional-column">
+
+                            {% if news.published_at %}
+
+                                {{ news.published_at }}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- İŞLEMLER -->
+
+                        <td class="text-end">
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-dark"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#preview{{ news.id }}"
+                                title="AI Önizleme">
+
+                                <i class="bi bi-eye-fill"></i>
+
+                            </button>
+
+
+                            <div class="btn-group">
+
+                                <a
+                                    href="/news/{{ news.id }}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    title="Detay">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+
+                                <a
+                                    href="/editor/{{ news.id }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Editör">
+
+                                    <i class="bi bi-pencil"></i>
+
+                                </a>
+
+
+                                <a
+                                    href="/instagram/{{ news.id }}"
+                                    class="btn btn-sm btn-outline-success"
+                                    title="Instagram içeriği oluştur">
+
+                                    <i class="bi bi-instagram"></i>
+                                    <span class="d-none d-xxl-inline ms-1">Instagram</span>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ================================================== -->
+                    <!-- AI PREVIEW -->
+                    <!-- ================================================== -->
+
+                    <tr class="table-light">
+
+                        <td colspan="10">
+
+                            <div
+                                class="collapse"
+                                id="preview{{ news.id }}">
+
+                                <div
+                                    class="card border-0 shadow-sm my-2">
+
+                                    <div class="card-body">
+
+                                        <!-- ================================= -->
+                                        <!-- AI ANA BİLGİLER -->
+                                        <!-- ================================= -->
+
+                                        <div class="row g-4">
+
+                                            <!-- SOL -->
+                                            <div class="col-lg-6">
+
+                                                <!-- AI BAŞLIK -->
+
+                                                <div class="mb-4">
+
+                                                    <h6 class="fw-bold mb-2">
+
+                                                        📝 AI Başlık
+
+                                                    </h6>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control editor-field"
+                                                        data-field="translated_title"
+                                                        data-news-id="{{ news.id }}"
+                                                        value="{{ news.translated_title or news.title }}"
+                                                        data-original-value="{{ news.translated_title or news.title }}">
+
+                                                </div>
+
+
+                                                <!-- AI ÖZET -->
+
+                                                <div>
+
+                                                    <h6 class="fw-bold mb-2">
+
+                                                        📄 AI Özeti
+
+                                                    </h6>
+
+                                                    <textarea
+                                                        class="form-control editor-field"
+                                                        data-field="summary"
+                                                        data-news-id="{{ news.id }}"
+                                                        rows="5">{{ news.summary or "" }}</textarea>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- SAĞ -->
+
+                                            <div class="col-lg-6">
+
+                                                <h6 class="fw-bold mb-3">
+
+                                                    🤖 AI Analizi
+
+                                                </h6>
+
+
+                                                <!-- MARKA -->
+
+                                                <div class="mb-3">
+
+                                                    <label
+                                                        class="form-label fw-semibold">
+
+                                                        Marka
+
+                                                    </label>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control editor-field"
+                                                        data-field="brand"
+                                                        data-news-id="{{ news.id }}"
+                                                        value="{{ news.brand or "" }}">
+
+                                                </div>
+
+
+                                                <!-- KATEGORİ -->
+
+                                                <div class="mb-3">
+
+                                                    <label
+                                                        class="form-label fw-semibold">
+
+                                                        Kategori
+
+                                                    </label>
+
+                                                    <select
+                                                        class="form-select editor-field"
+                                                        data-field="category"
+                                                        data-news-id="{{ news.id }}">
+
+                                                        <option value="">
+                                                            Seçiniz
+                                                        </option>
+
+                                                        <option
+                                                            value="EV"
+                                                            {% if news.category == "EV" %}selected{% endif %}>
+                                                            EV
+                                                        </option>
+
+                                                        <option
+                                                            value="Hybrid"
+                                                            {% if news.category == "Hybrid" %}selected{% endif %}>
+                                                            Hybrid
+                                                        </option>
+
+                                                        <option
+                                                            value="ICE"
+                                                            {% if news.category == "ICE" %}selected{% endif %}>
+                                                            ICE
+                                                        </option>
+
+                                                        <option
+                                                            value="SUV"
+                                                            {% if news.category == "SUV" %}selected{% endif %}>
+                                                            SUV
+                                                        </option>
+
+                                                        <option
+                                                            value="Sedan"
+                                                            {% if news.category == "Sedan" %}selected{% endif %}>
+                                                            Sedan
+                                                        </option>
+
+                                                        <option
+                                                            value="Hatchback"
+                                                            {% if news.category == "Hatchback" %}selected{% endif %}>
+                                                            Hatchback
+                                                        </option>
+
+                                                        <option
+                                                            value="Pickup"
+                                                            {% if news.category == "Pickup" %}selected{% endif %}>
+                                                            Pickup
+                                                        </option>
+
+                                                        <option
+                                                            value="Battery"
+                                                            {% if news.category == "Battery" %}selected{% endif %}>
+                                                            Battery
+                                                        </option>
+
+                                                        <option
+                                                            value="Charging"
+                                                            {% if news.category == "Charging" %}selected{% endif %}>
+                                                            Charging
+                                                        </option>
+
+                                                        <option
+                                                            value="Software"
+                                                            {% if news.category == "Software" %}selected{% endif %}>
+                                                            Software
+                                                        </option>
+
+                                                        <option
+                                                            value="Recall"
+                                                            {% if news.category == "Recall" %}selected{% endif %}>
+                                                            Recall
+                                                        </option>
+
+                                                        <option
+                                                            value="Factory"
+                                                            {% if news.category == "Factory" %}selected{% endif %}>
+                                                            Factory
+                                                        </option>
+
+                                                        <option
+                                                            value="Motorsport"
+                                                            {% if news.category == "Motorsport" %}selected{% endif %}>
+                                                            Motorsport
+                                                        </option>
+
+                                                        <option
+                                                            value="Financial"
+                                                            {% if news.category == "Financial" %}selected{% endif %}>
+                                                            Financial
+                                                        </option>
+
+                                                        <option
+                                                            value="Other"
+                                                            {% if news.category == "Other" %}selected{% endif %}>
+                                                            Other
+                                                        </option>
+
+                                                    </select>
+
+                                                </div>
+
+
+                                                <!-- ÖNEM -->
+
+                                                <div class="mb-3">
+
+                                                    <label
+                                                        class="form-label fw-semibold">
+
+                                                        Önem
+
+                                                    </label>
+
+                                                    <div class="input-group">
+
+                                                        <input
+                                                            type="number"
+                                                            class="form-control editor-field"
+                                                            data-field="importance"
+                                                            data-news-id="{{ news.id }}"
+                                                            min="1"
+                                                            max="10"
+                                                            step="1"
+                                                            value="{{ news.importance or 1 }}">
+
+                                                        <span class="input-group-text">
+                                                            /10
+                                                        </span>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <!-- DURUM -->
+
+                                                <div>
+
+                                                    <label
+                                                        class="form-label fw-semibold">
+
+                                                        Durum
+
+                                                    </label>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        value="{{ news.status }}"
+                                                        disabled>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <hr class="my-4">
+
+
+                                        <!-- ================================= -->
+                                        <!-- INSTAGRAM + GÖRSEL -->
+                                        <!-- ================================= -->
+
+                                        <div class="row g-4">
+
+                                            <!-- INSTAGRAM -->
+
+                                            <div class="col-lg-6">
+
+                                                <h6 class="fw-bold mb-3">
+
+                                                    <i
+                                                        class="bi bi-instagram text-danger me-2">
+                                                    </i>
+
+                                                    Instagram
+
+                                                </h6>
+
+
+                                                <!-- INSTAGRAM BAŞLIK -->
+
+                                                <div class="mb-3">
+
+                                                    <label
+                                                        class="form-label">
+
+                                                        Başlık
+
+                                                    </label>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control editor-field"
+                                                        data-field="instagram_title"
+                                                        data-news-id="{{ news.id }}"
+                                                        value="{{ news.instagram_title or "" }}">
+
+                                                </div>
+
+
+                                                <!-- CAPTION -->
+
+                                                <div class="mb-3">
+
+                                                    <label
+                                                        class="form-label">
+
+                                                        Caption
+
+                                                    </label>
+
+                                                    <textarea
+                                                        class="form-control editor-field"
+                                                        data-field="instagram_caption"
+                                                        data-news-id="{{ news.id }}"
+                                                        rows="7">{{ news.instagram_caption or "" }}</textarea>
+
+                                                </div>
+
+
+                                                <!-- HASHTAG -->
+
+                                                <div>
+
+                                                    <label
+                                                        class="form-label">
+
+                                                        Hashtag
+
+                                                    </label>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control editor-field"
+                                                        data-field="hashtags"
+                                                        data-news-id="{{ news.id }}"
+                                                        value="{{ news.hashtags or "" }}">
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- GÖRSEL PROMPT -->
+
+                                            <div class="col-lg-6">
+
+                                                <h6 class="fw-bold mb-3">
+
+                                                    <i
+                                                        class="bi bi-image text-success me-2">
+                                                    </i>
+
+                                                    Görsel Uygulama Notu
+
+                                                </h6>
+
+
+                                                <textarea
+                                                    class="form-control editor-field"
+                                                    data-field="image_prompt"
+                                                    data-news-id="{{ news.id }}"
+                                                    rows="12">{{ news.image_prompt or "" }}</textarea>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <hr class="my-4">
+
+
+                                        <!-- ================================= -->
+                                        <!-- KAYDET -->
+                                        <!-- ================================= -->
+
+                                        <div
+                                            class="d-flex justify-content-between align-items-center">
+
+                                            <div>
+
+                                                <small
+                                                    class="text-muted">
+
+                                                    Haber #{{ news.id }}
+
+                                                    • AI içeriği düzenlenebilir.
+
+                                                </small>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-primary save-editor-news"
+                                                    data-news-id="{{ news.id }}">
+
+                                                    <i
+                                                        class="bi bi-save me-1">
+                                                    </i>
+
+                                                    Değişiklikleri Kaydet
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

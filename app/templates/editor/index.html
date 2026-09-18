@@ -1,0 +1,177 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Editor Paneli
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Sayfa Başlığı -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="bi bi-pencil-square me-2"></i>
+
+                AI Editör Paneli
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Haberleri filtreleyin, düzenleyin ve yayın sürecini yönetin.
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <a
+                href="/dashboard"
+                class="btn btn-outline-secondary">
+
+                <i class="bi bi-speedometer2 me-1"></i>
+
+                Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Dashboard Kartları -->
+
+    {% include "partials/dashboard_cards.html" %}
+
+
+    <!-- Filtreler -->
+
+    {% include "partials/filters.html" %}
+
+
+    <!-- Toplu İşlem Formu -->
+
+    <form
+        id="bulkForm"
+        method="post"
+        action="/editor/bulk/ai">
+
+        {% include "partials/bulk_actions.html" %}
+
+        {% include "partials/news_table.html" %}
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+
+<script>
+
+const bulkForm = document.getElementById("bulkForm");
+
+const selectAll = document.getElementById("selectAll");
+const checkboxes = document.querySelectorAll(".news-check");
+const selectedCount = document.getElementById("selectedCount");
+
+const bulkAI = document.getElementById("bulkAI");
+const bulkInstagram = document.getElementById("bulkInstagram");
+const bulkSchedule = document.getElementById("bulkSchedule");
+const bulkPublish = document.getElementById("bulkPublish");
+const bulkArchive = document.getElementById("bulkArchive");
+const bulkDelete = document.getElementById("bulkDelete");
+
+function updateCounter() {
+
+    const checked =
+        document.querySelectorAll(".news-check:checked").length;
+
+    if (selectedCount) {
+        selectedCount.textContent = checked;
+    }
+
+    if (selectAll) {
+
+        selectAll.checked =
+            checked === checkboxes.length &&
+            checkboxes.length > 0;
+
+        selectAll.indeterminate =
+            checked > 0 &&
+            checked < checkboxes.length;
+
+    }
+
+}
+
+if (selectAll) {
+
+    selectAll.addEventListener("change", function () {
+
+        checkboxes.forEach(cb => {
+
+            cb.checked = this.checked;
+
+        });
+
+        updateCounter();
+
+    });
+
+}
+
+checkboxes.forEach(cb => {
+
+    cb.addEventListener("change", updateCounter);
+
+});
+
+function submitBulk(action) {
+
+    const selected =
+        document.querySelectorAll(".news-check:checked");
+
+    if (selected.length === 0) {
+
+        alert("Lütfen en az bir haber seçin.");
+
+        return;
+
+    }
+
+    bulkForm.action = action;
+
+    bulkForm.submit();
+
+}
+
+bulkInstagram?.addEventListener("click", function () {
+
+    submitBulk("/editor/bulk/instagram");
+
+});
+
+bulkSchedule?.addEventListener("click", function () {
+
+    submitBulk("/editor/bulk/schedule");
+
+});
+
+
+updateCounter();
+
+</script>
+
+
+{% endblock %}

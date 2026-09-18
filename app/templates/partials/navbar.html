@@ -1,0 +1,166 @@
+{% set current_path = request.url.path %}
+<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm px-2 px-md-4 py-3">
+
+    <div class="container-fluid gap-2">
+
+        <!-- Sol -->
+
+        <div class="d-flex align-items-center">
+
+            <h4 class="fw-bold mb-0">
+
+                {% if current_path.startswith('/editor') or current_path.startswith('/news/') %}
+                    Haberler
+                {% elif current_path.startswith('/instagram') %}
+                    Instagram
+                {% elif current_path.startswith('/sources') %}
+                    RSS Kaynakları
+                {% elif current_path.startswith('/analytics') %}
+                    Analitik
+                {% elif current_path.startswith('/settings') %}
+                    Ayarlar
+                {% else %}
+                    Dashboard
+                {% endif %}
+
+            </h4>
+
+        </div>
+
+        <!-- Sağ -->
+
+        <div class="d-flex flex-wrap align-items-center gap-2 gap-lg-3">
+
+            <!-- Arama -->
+
+            <form class="d-none d-lg-block" method="get" action="/editor">
+
+                <div class="input-group">
+
+                    <span class="input-group-text bg-light border-end-0">
+
+                        <i class="bi bi-search"></i>
+
+                    </span>
+
+                    <input
+                        name="keyword"
+                        type="text"
+
+                        class="form-control border-start-0"
+
+                        placeholder="Haber ara..."
+
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-secondary"
+                        aria-label="Haber ara"
+                    >
+
+                        Ara
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- Bildirim -->
+
+            <a
+
+                class="btn btn-light position-relative"
+
+                href="/editor?status=ai_ready"
+
+                aria-label="AI hazır içeriklere git"
+
+                title="AI hazır içerikler">
+
+                <i class="bi bi-bell fs-5"></i>
+
+            </a>
+
+            <!-- Sistem -->
+
+            <div class="d-flex align-items-center">
+
+                <span class="badge bg-success">
+
+                    ● Sistem Aktif
+
+                </span>
+
+            </div>
+
+            <!-- Kullanıcı -->
+
+            <div class="dropdown">
+
+                <button
+
+                    class="btn btn-light dropdown-toggle"
+
+                    data-bs-toggle="dropdown">
+
+                    <i class="bi bi-person-circle"></i>
+
+                    Admin
+
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+
+                    <li>
+
+                        <a class="dropdown-item" href="/profile">
+
+                            <i class="bi bi-person"></i>
+
+                            Profil
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a class="dropdown-item" href="/settings">
+
+                            <i class="bi bi-gear"></i>
+
+                            Ayarlar
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <hr class="dropdown-divider">
+
+                    </li>
+
+                    <li>
+
+                        <a class="dropdown-item text-danger" href="/logout">
+
+                            <i class="bi bi-box-arrow-right"></i>
+
+                            Çıkış
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>

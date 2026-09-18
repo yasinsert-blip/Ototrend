@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Editör</title>
+
+    <style>
+
+        body{
+            font-family:Arial,Helvetica,sans-serif;
+            background:#f5f6fa;
+            margin:clamp(12px, 3vw, 40px);
+        }
+
+        .container{
+            max-width:1500px;
+            margin:auto;
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,.08);
+        }
+
+        h1{
+            margin-top:0;
+            margin-bottom:30px;
+        }
+
+        label{
+            display:block;
+            margin-top:18px;
+            margin-bottom:6px;
+            font-weight:bold;
+        }
+
+        input,
+        textarea,
+        select{
+
+            width:100%;
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:6px;
+            box-sizing:border-box;
+            font-size:15px;
+
+        }
+
+        textarea{
+
+            resize:vertical;
+            min-height:140px;
+
+        }
+
+        .row{
+
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+
+        }
+
+        .buttons{
+
+            margin-top:30px;
+            display:flex;
+            gap:10px;
+
+        }
+
+        .btn{
+
+            padding:12px 20px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            text-decoration:none;
+            color:white;
+            font-size:15px;
+
+        }
+
+        .save{
+
+            background:#16a34a;
+
+        }
+
+        .back{
+
+            background:#2563eb;
+
+        }
+
+    </style>
+    <style>
+        .comparison-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; align-items:start; }
+        .source-panel { background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:20px; min-width:0; }
+        .source-copy { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; max-height:75vh; overflow:auto; }
+        .source-title { overflow-wrap:anywhere; line-height:1.5; }
+        .draft-panel { min-width:0; }
+        .buttons { flex-wrap:wrap; }
+        @media(max-width:850px) { .comparison-grid,.row { grid-template-columns:1fr; } .container { padding:16px; } .source-copy { max-height:45vh; } }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📝 Haber Editörü</h1>
+    {% include "partials/news_selection_info.html" %}
+    {% if news.duplicate_of_id %}
+    <form method="post" action="/editor/{{ news.id }}/ungroup">
+        <p>Bu kayıt bir haber grubunda. Metinleri değiştirmeden ayrı kayıt olarak gösterebilirsiniz.</p>
+        <button class="btn back" type="submit">Gruptan ayır</button>
+    </form>
+    {% elif similar_news %}
+    <details style="padding:16px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:20px;">
+        <summary>Benzer haber önerileri ({{ similar_news|length }})</summary>
+        <p>Bunlar kesin eşleşmeler değildir. Onay vermeden hiçbir kayıt gruplanmaz. Taslağınızı düzenlediyseniz önce kaydedin.</p>
+        {% for item in similar_news %}
+        <article style="padding:12px 0;border-top:1px solid #ddd;">
+            <a href="/editor/{{ item.news.id }}" target="_blank" rel="noopener noreferrer">{{ item.news.source or 'Kaynak belirtilmemiş' }} — {{ item.news.translated_title or item.news.title }}</a>
+            <p>{{ item.news.title }}</p>
+            <p>Başlık yakınlığı: {{ item.score }}/100 (aynı olay olma olasılığı değildir).</p>
+            {% if item.warning %}<p style="color:#9a3412;">{{ item.warning }}</p>{% endif %}
+            <form method="post" action="/editor/{{ news.id }}/group">
+                <input type="hidden" name="parent_id" value="{{ item.news.id }}">
+                <label><input style="width:auto;" type="checkbox" name="confirmed" value="true" required> Haberleri karşılaştırdım; aynı gelişmeyi anlatıyorlar.</label>
+                <button class="btn back" type="submit">Bu kaydın altında grupla</button>
+            </form>
+        </article>
+        {% endfor %}
+    </details>
+    {% endif %}
+
+    <div class="comparison-grid">
+    <section class="source-panel" aria-labelledby="source-heading">
+        <h2 id="source-heading">Kaynak metni</h2>
+        <p>{{ news.source or 'Kaynak belirtilmemiş' }}</p>
+        {% if news.link and (news.link.startswith('https://') or news.link.startswith('http://')) %}
+        <p><a href="{{ news.link }}" target="_blank" rel="noopener noreferrer">Özgün kaynağı aç ↗</a></p>
+        {% endif %}
+        <h3 class="source-title">{{ news.title }}</h3>
+        <div class="source-copy" tabindex="0">{{ source_text or 'Bu kaynak yalnızca başlık sağlamış; ayrıntılı kaynak metni bulunmuyor.' }}</div>
+    </section>
+    <form method="post" class="draft-panel" aria-labelledby="draft-heading">
+        <h2 id="draft-heading">Türkçe taslak</h2>
+        <p>Soldaki kaynakla karşılaştırarak düzenleyin. Kaydetmek haberi yayımlamaz.</p>
+
+        <label>Türkçe Başlık</label>
+
+        <input
+            type="text"
+            name="translated_title"
+            value="{{ news.translated_title or '' }}"
+        >
+
+        <label>Özet</label>
+
+        <textarea
+            name="summary"
+        >{{ news.summary or '' }}</textarea>
+
+        <div class="row">
+
+            <div>
+
+                <label>Marka</label>
+
+                <input
+                    type="text"
+                    name="brand"
+                    value="{{ news.brand or '' }}"
+                >
+
+            </div>
+
+            <div>
+
+                <label>Kategori</label>
+
+                <input
+                    type="text"
+                    name="category"
+                    value="{{ news.category or '' }}"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div>
+
+                <label>Önem Puanı</label>
+
+                <input
+                    type="number"
+                    name="importance"
+                    value="{{ news.importance or 0 }}"
+                >
+
+            </div>
+
+            <div>
+
+                <label>Durum</label>
+
+                <input
+                    type="text"
+                    value="{{ news.status }}"
+                    disabled
+                >
+
+            </div>
+
+        </div>
+
+        <label>Editör Notu</label>
+
+        <textarea
+            name="editor_note"
+        >{{ news.editor_note or '' }}</textarea>
+
+        <div class="buttons">
+
+            <button
+                class="btn save"
+                type="submit">
+
+                💾 Kaydet
+
+            </button>
+
+            <a
+                href="/editor"
+                class="btn back">
+
+                ← Geri Dön
+
+            </a>
+
+        </div>
+
+    </form>
+    </div>
+
+</div>
+
+</body>
+
+</html>

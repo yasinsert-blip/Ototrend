@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | OtoTrend AI CMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <p class="text-primary fw-semibold text-uppercase small mb-1">OtoTrend AI Newsroom</p>
+        <h1 class="h3 fw-bold mb-1">{{ page_title }}</h1>
+        <p class="text-muted mb-0">{{ subtitle }}</p>
+    </div>
+    {% if page_mode == "instagram" %}
+        <a class="btn btn-outline-success" href="/editor?status=instagram_ready">
+            <i class="bi bi-instagram me-1"></i> Hazır içerikleri aç
+        </a>
+    {% elif page_mode == "images" %}
+        <a class="btn btn-outline-primary" href="/editor?status=instagram_draft">
+            <i class="bi bi-pencil-square me-1"></i> Taslak seç
+        </a>
+    {% elif page_mode == "settings" %}
+        <a class="btn btn-outline-primary" href="/sources">
+            <i class="bi bi-rss me-1"></i> Kaynakları yönet
+        </a>
+    {% endif %}
+</div>
+
+{% if page_mode == "analytics" %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">Toplam haber</div><div class="display-6 fw-bold">{{ stats.total_news }}</div></div></div></div>
+        <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">Aktif kaynak</div><div class="display-6 fw-bold">{{ stats.active_sources }}</div></div></div></div>
+        <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">Yayınlanan</div><div class="display-6 fw-bold">{{ stats.published }}</div></div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><h2 class="h6 mb-0">Editöryal akış</h2></div><div class="list-group list-group-flush">
+        <div class="list-group-item d-flex justify-content-between"><span>AI bekleyen</span><span class="badge text-bg-warning">{{ stats.ai_pending }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span>Editör incelemesi</span><span class="badge text-bg-info">{{ stats.editor_review }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span>Instagram hazır</span><span class="badge text-bg-success">{{ stats.instagram_ready }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span>Planlanan</span><span class="badge text-bg-primary">{{ stats.scheduled }}</span></div>
+    </div></div>
+{% elif page_mode == "images" %}
+    {% if images %}
+        <div class="row g-4">
+            {% for image in images %}
+                <div class="col-sm-6 col-xl-4"><div class="card h-100"><img class="card-img-top" src="{{ image.url }}" alt="{{ image.name }}"><div class="card-body d-flex justify-content-between align-items-center gap-2"><small class="text-muted text-break">{{ image.name }}</small><a class="btn btn-sm btn-outline-primary" href="{{ image.url }}" download>İndir</a></div></div></div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info mb-0">Henüz oluşturulmuş Instagram görseli yok. Bir Instagram taslağında görsel üretin.</div>
+    {% endif %}
+{% elif page_mode == "settings" %}
+    <div class="card"><div class="list-group list-group-flush">
+        {% for label, value in runtime_settings.items() %}
+            <div class="list-group-item d-flex justify-content-between gap-4"><span>{{ label }}</span><strong class="text-end">{{ value }}</strong></div>
+        {% endfor %}
+    </div></div>
+{% elif page_mode == "profile" %}
+    <div class="card"><div class="card-body"><h2 class="h5">Yönetici oturumu</h2><p class="mb-0 text-muted">Bu oturum OtoTrendTR içerik yönetimi için yetkilidir.</p></div></div>
+{% else %}
+    {% if page_mode == "telegram" %}
+        <div class="alert alert-info">Gönderilmiş Telegram kaydı: <strong>{{ telegram_sent }}</strong>. Gönderim işlemleri, editör onayı sonrası yapılmalıdır.</div>
+    {% endif %}
+    <div class="card"><div class="card-header"><h2 class="h6 mb-0">İçerikler</h2></div>
+        {% if news %}
+            <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Başlık</th><th>Kaynak</th><th>Durum</th><th class="text-end">İşlem</th></tr></thead><tbody>
+                {% for item in news %}
+                    <tr><td><div class="fw-semibold">{{ item.translated_title or item.title }}</div><small class="text-muted">#{{ item.id }}</small></td><td>{{ item.source or "-" }}</td><td><span class="badge text-bg-light border">{{ item.status }}</span></td><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% if page_mode == 'instagram' %}/instagram/{{ item.id }}{% else %}/editor/{{ item.id }}{% endif %}">{% if page_mode == 'instagram' %}Instagram'a hazırla{% else %}Aç{% endif %}</a></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+        {% else %}
+            <div class="card-body text-muted">Bu bölüm için henüz içerik yok.</div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

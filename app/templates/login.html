@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OtoTrend AI CMS | Giriş</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:Arial, Helvetica, sans-serif;
+
+            background:#f4f6f9;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            height:100vh;
+
+        }
+
+        .login-card{
+
+            width:420px;
+
+            background:white;
+
+            border-radius:12px;
+
+            box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+            padding:40px;
+
+        }
+
+        h1{
+
+            text-align:center;
+
+            margin-bottom:10px;
+
+            color:#222;
+
+        }
+
+        p{
+
+            text-align:center;
+
+            color:#666;
+
+            margin-bottom:30px;
+
+        }
+
+        label{
+
+            display:block;
+
+            margin-bottom:8px;
+
+            font-weight:bold;
+
+        }
+
+        input{
+
+            width:100%;
+
+            padding:12px;
+
+            margin-bottom:20px;
+
+            border:1px solid #ccc;
+
+            border-radius:6px;
+
+            font-size:15px;
+
+        }
+
+        button{
+
+            width:100%;
+
+            padding:14px;
+
+            border:none;
+
+            border-radius:6px;
+
+            background:#1e88e5;
+
+            color:white;
+
+            font-size:16px;
+
+            cursor:pointer;
+
+        }
+
+        button:hover{
+
+            background:#1565c0;
+
+        }
+
+        .error{
+
+            background:#ffebee;
+
+            color:#c62828;
+
+            padding:12px;
+
+            border-radius:6px;
+
+            margin-bottom:20px;
+
+            text-align:center;
+
+        }
+
+        .footer{
+
+            margin-top:30px;
+
+            text-align:center;
+
+            color:#888;
+
+            font-size:13px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="login-card">
+
+    <h1>OtoTrend AI CMS</h1>
+
+    <p>Yönetim Paneli</p>
+
+    {% if error %}
+
+        <div class="error">
+
+            {{ error }}
+
+        </div>
+
+    {% endif %}
+
+    <form action="/login" method="post">
+
+        <label>Kullanıcı Adı</label>
+
+        <input
+            type="text"
+            name="username"
+            required
+            autofocus
+        >
+
+        <label>Şifre</label>
+
+        <input
+            type="password"
+            name="password"
+            required
+        >
+
+        <button type="submit">
+
+            Giriş Yap
+
+        </button>
+
+    </form>
+
+    <div class="footer">
+
+        OtoTrend AI CMS v2.1.0
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

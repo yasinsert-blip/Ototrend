@@ -1,0 +1,123 @@
+{% set current_path = request.url.path %}
+<aside class="sidebar">
+
+    <div class="sidebar-header">
+
+        <a
+            class="logo"
+            href="/dashboard"
+            aria-label="OtoTrendTR Dashboard">
+
+            <img
+                class="sidebar-brand-logo"
+                src="/static/images/ototrendtr-logo-cutout.png"
+                alt="OtoTrendTR"
+                style="width: 32px; height: 24px;">
+
+        </a>
+
+        <div class="brand">
+
+            <h5>OtoTrend</h5>
+
+            <small>AI Newsroom</small>
+
+        </div>
+
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <a href="/dashboard" class="menu-item {% if current_path == '/' or current_path.startswith('/dashboard') %}active{% endif %}">
+
+            <i class="bi bi-speedometer2"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+        <a href="/editor" class="menu-item {% if current_path.startswith('/editor') or current_path.startswith('/news/') %}active{% endif %}">
+
+            <i class="bi bi-newspaper"></i>
+
+            <span>Haberler</span>
+
+        </a>
+
+        <a href="/ai" class="menu-item {% if current_path == '/ai' %}active{% endif %}">
+
+            <i class="bi bi-robot"></i>
+
+            <span>AI Editör</span>
+
+        </a>
+
+        <a href="/images" class="menu-item {% if current_path.startswith('/images') %}active{% endif %}">
+
+            <i class="bi bi-image"></i>
+
+            <span>AI Görseller</span>
+
+        </a>
+
+        <a href="/instagram" class="menu-item {% if current_path.startswith('/instagram') %}active{% endif %}">
+
+            <i class="bi bi-instagram"></i>
+
+            <span>Instagram</span>
+
+        </a>
+
+        <a href="/telegram" class="menu-item {% if current_path.startswith('/telegram') %}active{% endif %}">
+
+            <i class="bi bi-telegram"></i>
+
+            <span>Telegram</span>
+
+        </a>
+
+        <a href="/scheduler" class="menu-item {% if current_path.startswith('/scheduler') %}active{% endif %}">
+
+            <i class="bi bi-calendar-event"></i>
+
+            <span>Yayın Planı</span>
+
+        </a>
+
+        <a href="/sources" class="menu-item {% if current_path.startswith('/sources') %}active{% endif %}">
+
+            <i class="bi bi-rss"></i>
+
+            <span>RSS Kaynakları</span>
+
+        </a>
+
+        <a href="/analytics" class="menu-item {% if current_path.startswith('/analytics') %}active{% endif %}">
+
+            <i class="bi bi-bar-chart"></i>
+
+            <span>Analitik</span>
+
+        </a>
+
+        <a href="/settings" class="menu-item {% if current_path.startswith('/settings') %}active{% endif %}">
+
+            <i class="bi bi-gear"></i>
+
+            <span>Ayarlar</span>
+
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <div class="version">
+
+            Version 2.0
+
+        </div>
+
+    </div>
+
+</aside>

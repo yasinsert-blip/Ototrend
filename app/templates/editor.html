@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}
+OtoTrend AI Newsroom | AI Editör Paneli
+{% endblock %}
+
+{% block content %}
+
+<div class="editor-page">
+
+    <!-- Sayfa Başlığı -->
+    <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                Haberler
+            </h2>
+
+            <p class="text-muted mb-0">
+                Haber akışını inceleyin, düzenleyin ve yayın sürecini yönetin.
+            </p>
+
+        </div>
+
+        <div>
+
+            <a href="/dashboard"
+               class="btn btn-outline-secondary">
+
+                ← Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Flash Mesajları -->
+    {% include "partials/flash_messages.html" ignore missing %}
+
+    <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Haber çalışma alanları">
+        {% set active_section = request.query_params.get('section', 'all') %}
+        {% for key, label, sort_order in [('all', 'Tüm haberler', 'newest'), ('important', 'Önemli haberler', 'news_value'), ('review', 'İnceleme bekleyenler', 'newest'), ('ready', 'Yayıma hazır', 'newest')] %}
+        <a href="/editor?section={{ key }}&amp;sort={{ sort_order }}" class="btn {{ 'btn-primary' if active_section == key else 'btn-outline-primary' }}" {% if active_section == key %}aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+    </nav>
+    <p class="text-muted small">
+        {% if active_section == 'important' %}Son 48 saatte alınan, haber değeri en az 60 olan kayıtlar. Bu bölüm doğruluk onayı anlamına gelmez.
+        {% elif active_section == 'review' %}AI taslakları, manuel kontrol bekleyenler ve kaynak doğrulaması uyarıları.
+        {% elif active_section == 'ready' %}Instagram hazır veya planlandı durumundaki, kaynak doğrulaması uyarısı bulunmayan kayıtlar. Burada görünmek otomatik yayın başlatmaz.
+        {% else %}Bir çalışma alanı seçin veya tüm haberlerde arama yapın.{% endif %}
+    </p>
+    <details class="mb-3"><summary class="text-muted">Genel istatistikler</summary>
+        {% include "partials/dashboard_cards.html" %}
+    </details>
+
+    <!-- Filtreler -->
+    <div class="mt-4">
+        {% include "partials/filters.html" %}
+    </div>
+
+    {% include "partials/editor_pagination.html" %}
+
+    <!-- ========================= -->
+    <!-- BULK FORM BAŞLANGIÇ -->
+    <!-- ========================= -->
+
+    <form
+        id="bulkForm"
+        method="POST"
+        action="/editor/bulk">
+
+        {% include "partials/bulk_actions.html" %}
+
+        {% include "partials/news_table.html" %}
+
+    </form>
+
+    {% include "partials/editor_pagination.html" %}
+
+    <!-- ========================= -->
+    <!-- BULK FORM BİTİŞ -->
+    <!-- ========================= -->
+
+</div>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+    .editor-page { max-width: 1800px; margin: 0 auto; }
+    .editor-page .table-responsive { max-width: 100%; overflow-x: auto; }
+    .editor-page .table { min-width: 880px; }
+    .editor-page .table thead th { white-space: nowrap; }
+    .editor-page .btn-group { white-space: nowrap; }
+    @media (max-width: 1599.98px) {
+        .editor-page .editor-optional-column { display: none; }
+    }
+    @media (max-width: 991.98px) {
+        .editor-page .dashboard-card { min-height: 130px; }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+
+{{ super() }}
+
+<script src="/static/js/editor.js"></script>
+
+{% endblock %}

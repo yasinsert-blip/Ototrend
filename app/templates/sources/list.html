@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Kaynaklar | OtoTrend AI CMS{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-4">
+    <div><h2 class="fw-bold mb-1">Kaynak yönetimi</h2><p class="text-muted mb-0">Kaynakları bulun, sorunları inceleyin ve tarama durumunu yönetin.</p></div>
+    <a href="/sources/new" class="btn btn-primary">Yeni kaynak</a>
+</div>
+{% if feedback %}<div class="alert alert-{{ feedback.level }}" role="status">{{ feedback.message }}</div>{% endif %}
+<div class="row g-3 mb-4">
+    {% for count, label, filter, color in [(health.active, 'Aktif kaynak', 'active', 'success'), (health.needs_attention, 'Kontrol gereken', 'attention', 'warning'), (health.auto_disabled, 'Otomatik durdurulan', 'auto_disabled', 'danger'), (health.inactive, 'Tüm pasif kaynaklar', 'inactive', 'secondary')] %}
+    <div class="col-sm-6 col-xl-3">
+        <a class="card text-decoration-none h-100" href="/sources?state={{ filter }}" aria-label="{{ label }}: {{ count }}">
+            <div class="card-body"><span class="small text-muted">{{ label }}</span><div class="h3 mb-0 text-{{ color }}">{{ count }}</div></div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" action="/sources" class="row g-3 align-items-end">
+        <div class="col-lg-6"><label for="source-search" class="form-label">Kaynak ara</label><input id="source-search" type="search" class="form-control" name="q" value="{{ q }}" placeholder="Kaynak adı, marka veya adres…"></div>
+        <div class="col-lg-3"><label for="source-state" class="form-label">Durum</label>
+            <select id="source-state" class="form-select" name="state">
+                {% for value, label in [('', 'Tümü'), ('active', 'Aktif'), ('attention', 'Kontrol gereken'), ('auto_disabled', 'Otomatik durdurulan'), ('inactive', 'Pasif')] %}
+                <option value="{{ value }}" {% if state == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-3 d-flex gap-2"><button class="btn btn-primary" type="submit">Filtrele</button><a href="/sources" class="btn btn-outline-secondary">Temizle</a></div>
+    </form>
+</div></div>
+<p class="text-muted small" role="status">{{ health.total }} kaynaktan {{ sources|length }} tanesi gösteriliyor. Duraklatma, sürmekte olan taramayı iptal etmez.</p>
+<div class="card"><div class="table-responsive">
+<table class="table table-hover align-middle mb-0">
+    <thead><tr><th>Kaynak</th><th>Durum</th><th>Son tarama / başarı</th><th>Haber</th><th>Kontrol</th><th>İşlemler</th></tr></thead>
+    <tbody>
+        {% for source in sources %}
+        <tr>
+            <td style="min-width: 210px; max-width: 340px">
+                <strong>{{ source.name }}</strong>
+                <div class="small text-muted">{{ 'Genel RSS' if source.scraper == 'RSS' else source.scraper }} · Öncelik {{ source.priority }}</div>
+                {% if source.rss_url %}<div class="small text-break text-muted">{{ source.rss_url }}</div>{% endif %}
+                {% if source.is_oem %}<span class="badge text-bg-light border mt-1">{{ source.brand or 'Resmî kaynak' }}</span>{% endif %}
+            </td>
+            <td>
+                {% if source.enabled %}<span class="badge text-bg-success">Aktif</span>
+                {% elif source.auto_disabled_at %}<span class="badge text-bg-warning">Otomatik durduruldu</span>
+                {% else %}<span class="badge text-bg-secondary">Pasif</span>{% endif %}
+            </td>
+            <td class="small text-nowrap">
+                <div>Tarama: {% if source.last_run %}<time data-source-time datetime="{{ source.last_run.isoformat() }}Z">{{ source.last_run.strftime('%d.%m.%Y %H:%M') }} UTC</time>{% else %}Henüz taranmadı{% endif %}</div>
+                <div class="text-muted">Başarı: {% if source.last_success %}<time data-source-time datetime="{{ source.last_success.isoformat() }}Z">{{ source.last_success.strftime('%d.%m.%Y %H:%M') }} UTC</time>{% else %}Henüz yok{% endif %}</div>
+            </td>
+            <td>{{ source.total_news or 0 }}</td>
+            <td style="min-width: 190px; max-width: 320px">
+                {% if source_issues[source.id] %}
+                    <span class="badge text-bg-warning">Ayarları kontrol edin</span>
+                    <ul class="small ps-3 mb-0 mt-1">{% for issue in source_issues[source.id] %}<li>{{ issue }}</li>{% endfor %}</ul>
+                {% endif %}
+                {% if source.consecutive_failures %}<div class="small text-danger">{{ source.consecutive_failures }} ardışık hata</div>{% endif %}
+                {% if source.last_error %}<details class="small mt-1"><summary>Son hata ayrıntısı</summary><div class="text-break mt-1">{{ source.last_error }}</div></details>{% endif %}
+                {% if not source_issues[source.id] and not source.consecutive_failures %}<span class="small text-muted">{{ 'Son tarama başarılı' if source.last_success else 'İlk tarama bekleniyor' }}</span>{% endif %}
+            </td>
+            <td>
+                <div class="d-flex flex-wrap gap-2" style="min-width: 225px">
+                    <a href="/sources/{{ source.id }}/edit" class="btn btn-sm btn-outline-primary" aria-label="{{ source.name }} kaynağını düzenle">Düzenle</a>
+                    <form method="post" action="/sources/{{ source.id }}/{{ 'disable' if source.enabled else 'enable' }}?{{ filter_query }}">
+                        <button type="submit" class="btn btn-sm btn-outline-{{ 'secondary' if source.enabled else 'success' }}" {% if not source.enabled and source_issues[source.id] %}disabled title="Önce kaynak ayarlarını düzeltin"{% endif %}>{{ 'Duraklat' if source.enabled else 'Etkinleştir' }}</button>
+                    </form>
+                    <form method="post" action="/sources/{{ source.id }}/delete?{{ filter_query }}" onsubmit="return confirm('Bu kaynağı silmek istiyor musunuz? Haber geçmişi korunur.');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="{{ source.name }} kaynağını sil">Sil</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center py-5"><p class="mb-2">Bu filtrelere uygun kaynak bulunamadı.</p><a href="/sources">Tüm kaynakları göster</a></td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div></div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+document.querySelectorAll("[data-source-time]").forEach(element => {
+    const date = new Date(element.dateTime);
+    if (!Number.isNaN(date.getTime())) element.textContent = date.toLocaleString("tr-TR", {dateStyle: "short", timeStyle: "short"});
+});
+</script>
+{% endblock %}

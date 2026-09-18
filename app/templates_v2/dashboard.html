@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Dashboard
+
+</h2>
+
+<div class="row">
+
+    <div class="col-md-4">
+
+        <div class="card bg-secondary text-white mb-3">
+
+            <div class="card-body">
+
+                <h5>Toplam Haber</h5>
+
+                <h2>{{ count }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card bg-primary text-white mb-3">
+
+            <div class="card-body">
+
+                <h5>Kaynak Sayısı</h5>
+
+                <h2>11</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card bg-success text-white mb-3">
+
+            <div class="card-body">
+
+                <h5>Sistem</h5>
+
+                <h2>Çalışıyor</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h3 class="mb-3">
+
+Son Haberler
+
+</h3>
+
+<table class="table table-dark table-hover">
+
+    <thead>
+
+        <tr>
+
+            <th>#</th>
+            <th>Başlık</th>
+            <th>Kaynak</th>
+            <th></th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for item in news %}
+
+        <tr>
+
+            <td>{{ item.id }}</td>
+
+            <td>{{ item.title }}</td>
+
+            <td>{{ item.source }}</td>
+
+            <td>
+
+                <a href="/news/{{ item.id }}"
+                   class="btn btn-sm btn-warning">
+
+                    Detay
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

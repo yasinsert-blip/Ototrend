@@ -1,0 +1,42 @@
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+<div class="row g-3">
+    <div class="col-md-8">
+        <label for="source-name" class="form-label">Kaynak adı</label>
+        <input id="source-name" name="name" class="form-control" maxlength="100" required value="{{ values.name }}">
+    </div>
+    <div class="col-md-4">
+        <label for="source-priority" class="form-label">Tarama önceliği</label>
+        <input id="source-priority" name="priority" type="number" class="form-control" min="1" max="100" required value="{{ values.priority }}">
+        <div class="form-text">1 en yüksek, 100 en düşük öncelik.</div>
+    </div>
+    <div class="col-md-6">
+        <label for="source-reader" class="form-label">Kaynak okuyucusu</label>
+        <select id="source-reader" name="scraper" class="form-select" required>
+            {% if values.scraper not in scrapers %}<option value="{{ values.scraper }}" selected>{{ values.scraper }} — kullanılamıyor</option>{% endif %}
+            {% for reader in scrapers %}
+            <option value="{{ reader }}" {% if reader == values.scraper %}selected{% endif %}>{{ 'Genel RSS (önerilen)' if reader == 'RSS' else reader ~ ' — özel okuyucu' }}</option>
+            {% endfor %}
+        </select>
+        <div class="form-text">RSS adresi olan kaynaklarda Genel RSS seçin. Özel okuyucular kendi sitelerini okur.</div>
+    </div>
+    <div class="col-md-6">
+        <label for="source-rss" class="form-label">RSS adresi</label>
+        <input id="source-rss" name="rss_url" type="url" class="form-control" value="{{ values.rss_url or '' }}" placeholder="https://ornek.com/feed/" {% if values.scraper == 'RSS' %}required{% endif %}>
+        <div class="form-text">Genel RSS için zorunlu; özel okuyucularda boş bırakılabilir.</div>
+    </div>
+    <div class="col-12">
+        <label for="source-website" class="form-label">Web sitesi</label>
+        <input id="source-website" name="website" type="url" class="form-control" value="{{ values.website or '' }}" placeholder="https://ornek.com">
+    </div>
+    <div class="col-12">
+        <div class="form-check form-switch">
+            <input id="source-enabled" name="enabled" type="checkbox" class="form-check-input" {% if values.enabled %}checked{% endif %}>
+            <label for="source-enabled" class="form-check-label">Otomatik taramaya dahil et</label>
+        </div>
+        <p class="form-text mb-0">Duraklatılmış kaynakların haber geçmişi korunur.</p>
+    </div>
+</div>
+<div class="d-flex gap-2 mt-4">
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a href="/sources" class="btn btn-outline-secondary">Kaynaklara dön</a>
+</div>

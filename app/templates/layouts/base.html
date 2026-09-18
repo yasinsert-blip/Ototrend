@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}OtoTrend AI Newsroom{% endblock %}</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css"
+      rel="stylesheet">
+
+
+<style>
+
+
+.dashboard-card{
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:22px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+
+    transition:.25s;
+
+    height:100%;
+
+}
+
+
+.dashboard-card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+
+.dashboard-card .icon{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:22px;
+
+    margin-bottom:18px;
+
+    color:white;
+
+}
+
+
+.dashboard-card.primary .icon{
+    background:#2563eb;
+}
+
+.dashboard-card.warning .icon{
+    background:#d97706;
+}
+
+.dashboard-card.success .icon{
+    background:#059669;
+}
+
+.dashboard-card.info .icon{
+    background:#0891b2;
+}
+
+.dashboard-card.secondary .icon{
+    background:#6b7280;
+}
+
+.dashboard-card.danger .icon{
+    background:#dc2626;
+}
+
+
+.dashboard-card .value{
+
+    font-size:30px;
+
+    font-weight:700;
+
+}
+
+
+.dashboard-card .label{
+
+    margin-top:6px;
+
+    color:#6b7280;
+
+    font-size:14px;
+
+}
+
+
+
+        :root{
+
+            --sidebar-width:260px;
+
+            --primary:#2563eb;
+            --success:#059669;
+            --warning:#d97706;
+            --danger:#dc2626;
+
+            --bg:#f4f7fb;
+            --card:#ffffff;
+            --border:#e5e7eb;
+
+            --text:#1f2937;
+            --muted:#6b7280;
+
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:"Inter",sans-serif;
+            background:var(--bg);
+            color:var(--text);
+
+        }
+
+        a{
+            text-decoration:none;
+        }
+
+        .wrapper{
+
+            display:flex;
+            min-height:100vh;
+
+        }
+
+        .main{
+
+            flex:1;
+            display:flex;
+            flex-direction:column;
+
+        }
+
+        .content{
+
+            padding:30px;
+
+        }
+
+        .page-title{
+
+            font-size:30px;
+            font-weight:700;
+            margin-bottom:25px;
+
+        }
+
+        .card{
+
+            border:none;
+            border-radius:16px;
+            box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+        }
+
+        @media(max-width:992px){
+
+            .content{
+
+                padding:20px;
+
+            }
+
+        }
+        .sidebar{
+
+    width:260px;
+    min-height:100vh;
+
+    background:#111827;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    position:sticky;
+
+    top:0;
+
+}
+
+.sidebar-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:25px;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.logo{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:14px;
+
+    background:#2563eb;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:24px;
+
+}
+
+.brand h5{
+
+    margin:0;
+
+    font-weight:700;
+
+}
+
+.brand small{
+
+    color:#9ca3af;
+
+}
+
+.sidebar-menu{
+
+    flex:1;
+
+    padding:20px 12px;
+
+}
+
+.menu-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    color:#d1d5db;
+
+    padding:13px 16px;
+
+    border-radius:12px;
+
+    margin-bottom:6px;
+
+    transition:.25s;
+
+}
+
+.menu-item:hover{
+
+    background:#1f2937;
+
+    color:#fff;
+
+}
+
+.menu-item.active{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+.menu-item i{
+
+    font-size:20px;
+
+}
+
+.sidebar-footer{
+
+    padding:20px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+.version{
+
+    text-align:center;
+
+    color:#9ca3af;
+
+    font-size:13px;
+
+}
+
+@media(max-width:992px){
+
+    .sidebar{
+
+        width:80px;
+
+    }
+
+    .brand,
+
+    .menu-item span,
+
+    .version{
+
+        display:none;
+
+    }
+
+    .menu-item{
+
+        justify-content:center;
+
+    }
+
+}
+.topbar{
+
+    height:72px;
+
+    background:#fff;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 24px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.topbar-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+.menu-toggle{
+
+    display:none;
+
+    border:none;
+
+    background:none;
+
+    font-size:24px;
+
+}
+
+.global-search{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:#f3f4f6;
+
+    border-radius:12px;
+
+    padding:10px 14px;
+
+    min-width:360px;
+
+}
+
+.global-search input{
+
+    border:none;
+
+    background:transparent;
+
+    outline:none;
+
+    width:100%;
+
+}
+
+.topbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.icon-btn{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#f3f4f6;
+
+    position:relative;
+
+}
+
+.icon-btn .badge{
+
+    position:absolute;
+
+    top:-5px;
+
+    right:-5px;
+
+}
+
+@media(max-width:992px){
+
+    .menu-toggle{
+
+        display:block;
+
+    }
+
+    .global-search{
+
+        min-width:220px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .global-search{
+
+        display:none;
+
+    }
+
+}
+    </style>
+
+    {% block styles %}{% endblock %}
+
+</head>
+
+
+
+<body>
+
+<div class="wrapper">
+
+    {% include "partials/sidebar.html" %}
+
+    <div class="main">
+
+        {% include "partials/topbar.html" %}
+
+        <main class="content">
+
+            {% include "partials/flash_messages.html" ignore missing %}
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Onay</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Kapat">
+                </button>
+            </div>
+
+            <div class="modal-body">
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    İptal
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="confirmOk">
+                    Devam
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="{{ url_for('static', path='js/ui.js') }}"></script>
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
+
+{% include "partials/footer_scripts.html" ignore missing %}
+{% block scripts %}
+{% endblock %}
+</body>
+</html>

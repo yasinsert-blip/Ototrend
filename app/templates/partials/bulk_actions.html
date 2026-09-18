@@ -1,0 +1,112 @@
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+            <!-- Seçim Bilgisi -->
+            <div>
+                <strong id="selectedCount">0</strong>
+                haber seçildi.
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="d-flex flex-wrap gap-2" role="group" aria-label="Seçili haber işlemleri">
+
+                <!-- AI İşle -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="ai"
+                    class="btn btn-outline-warning bulk-action">
+
+                    <i class="bi bi-cpu me-1"></i>
+                    AI İşle
+
+                </button>
+
+
+                <!-- Instagram taslağı -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="instagram_generate"
+                    class="btn btn-outline-danger bulk-action">
+
+                    <i class="bi bi-instagram me-1"></i>
+                    Instagram Taslağı
+
+                </button>
+
+
+                <!-- Editör Onayı -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="instagram_ready"
+                    class="btn btn-outline-success bulk-action">
+
+                    <i class="bi bi-check-circle me-1"></i>
+                    Editör Onayla
+
+                </button>
+
+
+                <!-- Planla -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="scheduled"
+                    class="btn btn-outline-info bulk-action">
+
+                    <i class="bi bi-calendar-check me-1"></i>
+                    Planla
+
+                </button>
+
+
+                <!-- Yayınla -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="published"
+                    class="btn btn-outline-primary bulk-action">
+
+                    <i class="bi bi-upload me-1"></i>
+                    Yayınla
+
+                </button>
+
+
+                <!-- Arşivle -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="archived"
+                    class="btn btn-outline-secondary bulk-action">
+
+                    <i class="bi bi-archive me-1"></i>
+                    Arşivle
+
+                </button>
+
+
+                <!-- Sil -->
+                <button
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    class="btn btn-outline-danger bulk-action">
+
+                    <i class="bi bi-trash me-1"></i>
+                    Sil
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,109 @@
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <button class="menu-toggle" type="button">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <form class="global-search" method="get" action="/editor">
+
+            <i class="bi bi-search"></i>
+
+            <input
+                type="text"
+                name="keyword"
+                placeholder="Haber, marka veya model ara...">
+
+        </form>
+
+    </div>
+
+    <div class="topbar-right">
+
+        <button class="icon-btn" title="AI Kuyruğu">
+            <i class="bi bi-cpu"></i>
+            <span class="badge bg-danger">3</span>
+        </button>
+
+        <button class="icon-btn" title="Bildirimler">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-warning text-dark">5</span>
+        </button>
+
+        <button
+            class="icon-btn"
+            id="themeToggle"
+            title="Tema">
+
+            <i class="bi bi-moon-stars"></i>
+
+        </button>
+
+        <a href="/editor/new" class="btn btn-primary">
+
+            <i class="bi bi-plus-lg"></i>
+
+            Yeni Haber
+
+        </a>
+
+        <div class="dropdown">
+
+            <button
+                class="btn btn-light dropdown-toggle"
+                data-bs-toggle="dropdown">
+
+                <i class="bi bi-person-circle"></i>
+
+                Admin
+
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+
+                <li>
+
+                    <a class="dropdown-item" href="/profile">
+
+                        <i class="bi bi-person"></i>
+
+                        Profil
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a class="dropdown-item" href="/settings">
+
+                        <i class="bi bi-gear"></i>
+
+                        Ayarlar
+
+                    </a>
+
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <li>
+
+                    <a class="dropdown-item text-danger" href="/logout">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Çıkış Yap
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</header>

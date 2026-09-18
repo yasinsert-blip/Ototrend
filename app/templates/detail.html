@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ news.translated_title or news.title }} | OtoTrend AI CMS{% endblock %}
+
+{% block styles %}
+<style>
+    .news-detail-page { max-width: 1400px; margin: 0 auto; }
+    .news-detail-hero { background: linear-gradient(135deg, #ffffff 0%, #f0f6ff 100%); border: 1px solid #dbeafe; }
+    .news-detail-title { max-width: 980px; line-height: 1.2; }
+    .news-detail-copy { white-space: pre-line; line-height: 1.75; }
+    .detail-meta dt { color: #6b7280; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .detail-meta dd { margin-bottom: 1.15rem; font-weight: 600; overflow-wrap: anywhere; }
+    .detail-label { color: #64748b; font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .instagram-caption { max-height: 420px; overflow-y: auto; }
+    @media (max-width: 575.98px) {
+        .news-detail-title { font-size: 1.6rem; }
+        .news-detail-actions .btn { width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="news-detail-page">
+    {% include "partials/news_selection_info.html" %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <a href="/dashboard" class="btn btn-outline-secondary align-self-start">
+            <i class="bi bi-arrow-left me-1"></i> Dashboard'a dön
+        </a>
+        <div class="d-flex flex-wrap gap-2 news-detail-actions">
+            <a href="/editor/{{ news.id }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil-square me-1"></i> Editörde aç
+            </a>
+            <a href="/instagram/{{ news.id }}" class="btn btn-outline-danger">
+                <i class="bi bi-instagram me-1"></i> Instagram'a hazırla
+            </a>
+        </div>
+    </div>
+
+    <section class="card news-detail-hero mb-4">
+        <div class="card-body p-4 p-lg-5">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="badge text-bg-light border">{{ news.source or "Kaynak belirtilmemiş" }}</span>
+                {% if news.category %}<span class="badge text-bg-primary">{{ news.category }}</span>{% endif %}
+                <span class="badge text-bg-light border">{{ news.status or "Yeni" }}</span>
+            </div>
+            <h1 class="news-detail-title h2 fw-bold mb-3">{{ news.translated_title or news.title }}</h1>
+            {% if news.translated_title and news.translated_title != news.title %}
+                <p class="text-muted mb-3">Orijinal başlık: {{ news.title }}</p>
+            {% endif %}
+            <div class="d-flex flex-wrap gap-3 small text-muted">
+                <span><i class="bi bi-calendar3 me-1"></i>{{ (news.published_at or news.created_at).strftime("%d.%m.%Y %H:%M") if (news.published_at or news.created_at) else "Tarih belirtilmemiş" }}</span>
+                {% if news.brand %}<span><i class="bi bi-car-front me-1"></i>{{ news.brand }}</span>{% endif %}
+                {% if news.importance is not none %}<span><i class="bi bi-bar-chart me-1"></i>Önem: {{ news.importance }}/10</span>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <section class="card mb-4">
+                <div class="card-header py-3"><h2 class="h5 mb-0">Haber özeti</h2></div>
+                <div class="card-body p-4">
+                    {% if news.summary or news.content %}
+                        <div class="news-detail-copy">{{ news.summary or news.content }}</div>
+                    {% else %}
+                        <div class="alert alert-light border mb-0">
+                            Bu kaynak içerik özeti göndermedi. Haber ayrıntıları için aşağıdaki özgün kaynak bağlantısını açabilirsiniz.
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header d-flex justify-content-between align-items-center py-3">
+                    <h2 class="h5 mb-0">Instagram taslağı</h2>
+                    {% if news.instagram_title or news.instagram_caption %}
+                        <span class="badge text-bg-warning">Taslak mevcut</span>
+                    {% else %}
+                        <span class="badge text-bg-light border">Henüz oluşturulmadı</span>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    {% if news.instagram_title or news.instagram_caption %}
+                        <div class="mb-4">
+                            <div class="detail-label mb-1">Başlık</div>
+                            <div class="fw-bold fs-5">{{ news.instagram_title or "Başlık bulunmuyor" }}</div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="detail-label mb-1">Açıklama</div>
+                            <div class="news-detail-copy instagram-caption">{{ news.instagram_caption or "Açıklama bulunmuyor" }}</div>
+                        </div>
+                        {% if news.hashtags %}
+                            <div><div class="detail-label mb-1">Etiketler</div><div class="text-primary">{{ news.hashtags }}</div></div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted mb-3">Bu haber için henüz Instagram başlığı ve açıklaması oluşturulmadı.</p>
+                        <a href="/instagram/{{ news.id }}" class="btn btn-danger"><i class="bi bi-stars me-1"></i> Instagram taslağı oluştur</a>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <div class="col-xl-4">
+            <section class="card mb-4">
+                <div class="card-header py-3"><h2 class="h5 mb-0">Haber bilgileri</h2></div>
+                <div class="card-body p-4">
+                    <dl class="detail-meta mb-0">
+                        <dt>Kaynak</dt><dd>{{ news.source or "Belirtilmemiş" }}</dd>
+                        <dt>Kategori</dt><dd>{{ news.category or "Henüz sınıflandırılmadı" }}</dd>
+                        <dt>Marka</dt><dd>{{ news.brand or "Belirtilmemiş" }}</dd>
+                        <dt>Dil</dt><dd>{{ news.language or "Belirtilmemiş" }}</dd>
+                        <dt>İş akışı</dt><dd>{{ news.status or "Yeni" }}</dd>
+                    </dl>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header py-3"><h2 class="h5 mb-0">Kaynak bağlantısı</h2></div>
+                <div class="card-body p-4">
+                    {% if news.link %}
+                        <p class="small text-muted">Haberi doğrulamak için kaynağın özgün sayfasını açın.</p>
+                        <a href="{{ news.link }}" class="btn btn-outline-primary w-100" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Orijinal haberi aç
+                        </a>
+                    {% else %}
+                        <p class="text-muted mb-0">Bu haber için kaynak bağlantısı kayıtlı değil.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

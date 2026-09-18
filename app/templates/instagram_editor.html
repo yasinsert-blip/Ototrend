@@ -1,0 +1,1244 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Instagram Editörü | OtoTrend AI Newsroom
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ================================================== -->
+    <!-- BAŞLIK -->
+    <!-- ================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-instagram text-danger me-2"></i>
+                Instagram Editörü
+            </h2>
+
+            <p class="text-muted mb-0">
+                Haber #{{ news.id }} için Instagram içeriğini oluşturun,
+                düzenleyin ve kaydedin.
+            </p>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="/editor"
+                class="btn btn-outline-secondary">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Editör Paneli
+
+            </a>
+
+            <a
+                href="/news/{{ news.id }}"
+                class="btn btn-outline-dark">
+
+                <i class="bi bi-eye me-1"></i>
+                Haberi Gör
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    {% if news.status == "instagram_draft" %}
+        <div class="alert alert-warning py-2 mb-4">
+            <i class="bi bi-pencil-square me-1"></i>
+            <strong>Instagram Taslak:</strong> Editör onayı bekliyor.
+        </div>
+    {% elif news.status == "instagram_ready" %}
+        <div class="alert alert-success py-2 mb-4">
+            <i class="bi bi-check-circle me-1"></i>
+            <strong>Instagram Hazır:</strong> Planlanmaya hazır.
+        </div>
+    {% elif news.status == "scheduled" %}
+        <div class="alert alert-info py-2 mb-4">
+            <i class="bi bi-calendar-check me-1"></i>
+            <strong>Planlandı</strong>
+        </div>
+    {% elif news.status == "published" %}
+        <div class="alert alert-dark py-2 mb-4">
+            <i class="bi bi-upload me-1"></i>
+            <strong>Yayınlandı</strong>
+        </div>
+    {% endif %}
+
+    <!-- AI KARTI -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div
+                class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+
+                        <i class="bi bi-robot me-2"></i>
+                        Instagram AI
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        OtoTrendTR yayın rehberine uygun caption, tek başlıklı
+                        görsel uygulama notu ve hashtag oluşturur.
+
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <button
+                        type="button"
+                        id="generateInstagramAI"
+                        class="btn btn-dark">
+
+                        <i class="bi bi-stars me-1"></i>
+                        Metin ve Görsel Oluştur
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <p class="text-muted small mt-3 mb-0">
+                AI çıktısı otomatik olarak taslak kaydına eklenir. Kontrol
+                ettikten sonra Editör Paneli'nden onaylayın.
+            </p>
+
+            <!-- AI Durum -->
+
+            <div
+                id="instagramAIStatus"
+                class="alert alert-info mt-3 mb-0 d-none">
+
+                <span
+                    id="instagramAIStatusSpinner"
+                    class="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true">
+                </span>
+
+                <span id="instagramAIStatusText">
+                    AI metni hazırlıyor ve Instagram görselini oluşturuyor...
+                    Bu işlem biraz sürebilir.
+                </span>
+
+                <div
+                    class="progress mt-2"
+                    style="height: 7px;"
+                    aria-label="Instagram taslak üretim ilerlemesi">
+                    <div
+                        id="instagramAIProgress"
+                        class="progress-bar progress-bar-striped progress-bar-animated"
+                        role="progressbar"
+                        style="width: 0%"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow="0">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================================== -->
+    <!-- GÖRSEL ANAYASASI -->
+    <!-- ================================================== -->
+
+    <div
+        id="visualGuide"
+        class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-layout-text-window-reverse me-2"></i>
+                    Görsel Anayasası
+                </h5>
+
+                <span class="badge text-bg-light border">
+                    1080 × 1512 · 9:14
+                </span>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                <img
+                    src="/static/images/ototrendtr-logo-cutout.png"
+                    alt="Orijinal OtoTrendTR logosu"
+                    style="width: 120px; height: 72px; object-fit: contain;"
+                    class="border rounded bg-white p-1">
+
+                <div class="small text-muted">
+                    Sabit marka varlığı: dosya yeniden çizilmez veya değiştirilmez.
+                </div>
+            </div>
+
+            <p class="small text-muted mb-1">TEK ANA BAŞLIK</p>
+            <h3 id="visualHeadline" class="h4 fw-bold mb-3">
+                {{ news.instagram_title or "AI üretiminden sonra burada görünür." }}
+            </h3>
+
+            <div class="border rounded p-3 bg-light mb-3" id="visualSourceCard">
+                <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                    <div class="fw-semibold">Otomatik görsel kaynağı</div>
+                    <span id="visualSourceStatus" class="badge text-bg-secondary">
+                        {{ visual_image.status }}
+                    </span>
+                </div>
+                <div id="visualImagePreview" class="mb-2">
+                    {% if visual_image.image_url %}
+                        <img
+                            src="{{ visual_image.image_url }}"
+                            alt="Otomatik seçilen haber görseli"
+                            class="img-fluid rounded border"
+                            style="max-height: 220px; object-fit: contain;">
+                    {% endif %}
+                </div>
+                <div id="photoDirection" class="small">
+                    AI üretiminden sonra otomatik seçilen görsel için kadraj notu görünür.
+                </div>
+                <div id="visualSourceMessage" class="small text-muted mt-2">
+                    {{ visual_image.message }}
+                </div>
+                <a
+                    id="visualSourceLink"
+                    class="small d-inline-block mt-2 {% if not visual_image.source_url %}d-none{% endif %}"
+                    href="{{ visual_image.source_url or '#' }}"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Görsel kaynağını aç
+                </a>
+                <div id="visualLicense" class="small text-muted mt-2">
+                    {% if visual_image.license_name %}
+                        Lisans: {{ visual_image.license_name }}
+                    {% endif %}
+                    {% if visual_image.credit %}
+                        <span class="d-block">Atıf: {{ visual_image.credit }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="alert alert-light border mt-3 mb-0">
+                <div class="fw-semibold mb-1">Sabit uygulama kuralları</div>
+                <div id="visualBrief" class="small">
+                    1080 × 1512 px · Fotoğraf ağırlığı %70–80 · Büyük ve yüksek
+                    kontrastlı tek başlık · Sol üstte orijinal logo · En altta
+                    “HABERİN DETAYLARI AÇIKLAMADA”.
+                </div>
+                <ul id="validationNotes" class="small mb-0 mt-2 d-none"></ul>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- OLUŞTURULAN GÖRSEL -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-aspect-ratio me-2"></i>
+                        Instagram Görseli
+                    </h5>
+                    <p class="small text-muted mb-0">
+                        Kaynak fotoğraf, orijinal logo, tek başlık ve sabit alt ifade ile 1080 × 1512 olarak hazırlanır.
+                    </p>
+                </div>
+
+                <button type="button" id="renderInstagramVisual" class="btn btn-outline-dark">
+                    <i class="bi bi-image me-1"></i>
+                    Görseli Oluştur
+                </button>
+            </div>
+
+            <div id="visualRenderError" class="alert alert-warning d-none mb-3"></div>
+
+            <div
+                id="generatedVisualContainer"
+                class="{% if not rendered_image %}d-none{% endif %}">
+
+                <img
+                    id="generatedVisualPreview"
+                    src="{{ rendered_image or '' }}"
+                    alt="Oluşturulan OtoTrendTR Instagram görseli"
+                    class="img-fluid rounded border shadow-sm"
+                    style="max-width: 360px;">
+
+                <div class="mt-3">
+                    <a
+                        id="downloadGeneratedVisual"
+                        href="{{ rendered_image or '#' }}"
+                        class="btn btn-sm btn-dark"
+                        download>
+                        <i class="bi bi-download me-1"></i>
+                        Görseli İndir
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- HABER BİLGİSİ -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">
+
+                <i class="bi bi-newspaper me-2"></i>
+                Haber Bilgisi
+
+            </h5>
+
+            <div class="row g-3">
+
+                <div class="col-lg-8">
+
+                    <div class="border rounded p-3 bg-light">
+
+                        <small class="text-muted d-block mb-1">
+                            Başlık
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ news.translated_title or news.title }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="border rounded p-3 bg-light">
+
+                        <small class="text-muted d-block mb-1">
+                            Marka / Kategori
+                        </small>
+
+                        <div>
+
+                            {% if news.brand %}
+                                <span class="badge bg-light text-dark border">
+                                    {{ news.brand }}
+                                </span>
+                            {% endif %}
+
+                            {% if news.category %}
+                                <span class="badge bg-primary-subtle text-primary border">
+                                    {{ news.category }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-12">
+
+                    <div class="border rounded p-3 bg-light">
+
+                        <small class="text-muted d-block mb-1">
+                            Özet
+                        </small>
+
+                        <div class="text-muted">
+                            {{ news.summary or "Özet bulunmuyor." }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- INSTAGRAM FORM -->
+    <!-- ================================================== -->
+
+    <form
+        id="instagramForm"
+        method="post"
+        action="/instagram/{{ news.id }}">
+
+        <div class="row g-4">
+
+            <!-- ========================================== -->
+            <!-- SOL -->
+            <!-- ========================================== -->
+
+            <div class="col-xl-6">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <h5 class="fw-bold mb-4">
+
+                            <i class="bi bi-instagram text-danger me-2"></i>
+                            Instagram İçeriği
+
+                        </h5>
+
+
+                        <!-- Instagram Başlık -->
+
+                        <div class="mb-4">
+
+                            <label
+                                for="instagram_title"
+                                class="form-label fw-semibold">
+
+                                Instagram Başlığı
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="instagram_title"
+                                name="instagram_title"
+                                value="{{ news.instagram_title or '' }}"
+                                maxlength="150"
+                                placeholder="Instagram başlığı...">
+
+                        </div>
+
+
+                        <!-- Caption -->
+
+                        <div class="mb-4">
+
+                            <label
+                                for="instagram_caption"
+                                class="form-label fw-semibold">
+
+                                Caption
+
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                id="instagram_caption"
+                                name="instagram_caption"
+                                rows="12"
+                                placeholder="Instagram açıklaması...">{{ news.instagram_caption or '' }}</textarea>
+
+                            <div
+                                class="form-text text-end"
+                                id="captionCounter">
+
+                                0 karakter
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Hashtag -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="hashtags"
+                                class="form-label fw-semibold">
+
+                                Hashtag
+
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                id="hashtags"
+                                name="hashtags"
+                                rows="3"
+                                placeholder="#otomobil #otomotiv ...">{{ news.hashtags or '' }}</textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- SAĞ -->
+            <!-- ========================================== -->
+
+            <div class="col-xl-6">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <h5 class="fw-bold mb-4">
+
+                            <i class="bi bi-image text-success me-2"></i>
+                            Görsel Uygulama Notu
+
+                        </h5>
+
+
+                        <div class="mb-4">
+
+                            <label
+                                for="image_prompt"
+                                class="form-label fw-semibold">
+
+                                Otomatik Görsel ve Tasarım Notu
+
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                id="image_prompt"
+                                name="image_prompt"
+                                rows="14"
+                                placeholder="AI görsel kaynağını otomatik seçtiğinde uygulama notu burada oluşur..."
+                                readonly>{{ news.image_prompt or '' }}</textarea>
+
+                        </div>
+
+
+                        <!-- Bilgi -->
+
+                        <div class="alert alert-light border">
+
+                            <div class="fw-semibold mb-2">
+
+                                <i class="bi bi-info-circle me-1"></i>
+                                İçerik Akışı
+
+                            </div>
+
+                            <ol class="mb-0 ps-3">
+
+                                <li>AI, caption ve görsel uygulama notunu taslak olarak oluşturur ve kaydeder.</li>
+                                <li>Sistem önce haberin görselini, yoksa yalnızca açık lisanslı internet yedeğini otomatik seçer.</li>
+                                <li>Kaynak görsellerde kullanım izni; açık lisanslı görsellerde gerekiyorsa atıf, yayın öncesi kontrol edilir.</li>
+                                <li>Taslağı ve telefon okunabilirliğini kontrol edip kaydedin.</li>
+                                <li>Editör Paneli'nden onaylayıp planlayın ve yayınlayın.</li>
+
+                            </ol>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- KAYDET -->
+        <!-- ================================================== -->
+
+        <div class="card shadow-sm border-0 mt-4">
+
+            <div class="card-body">
+
+                <div
+                    class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <span class="text-muted">
+                            Haber:
+                        </span>
+
+                        <strong>
+                            #{{ news.id }}
+                        </strong>
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <a
+                            href="/editor"
+                            class="btn btn-outline-secondary">
+
+                            İptal
+
+                        </a>
+
+                        <button
+                            type="submit"
+                            id="saveInstagram"
+                            class="btn btn-success">
+
+                            <i class="bi bi-check-circle me-1"></i>
+                            Taslağı Kaydet
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const generateButton =
+            document.getElementById(
+                "generateInstagramAI"
+            );
+
+        const statusBox =
+            document.getElementById(
+                "instagramAIStatus"
+            );
+
+        const statusText =
+            document.getElementById(
+                "instagramAIStatusText"
+            );
+
+        const statusSpinner =
+            document.getElementById(
+                "instagramAIStatusSpinner"
+            );
+
+        const progressBar =
+            document.getElementById(
+                "instagramAIProgress"
+            );
+
+        const titleField =
+            document.getElementById(
+                "instagram_title"
+            );
+
+        const captionField =
+            document.getElementById(
+                "instagram_caption"
+            );
+
+        const hashtagsField =
+            document.getElementById(
+                "hashtags"
+            );
+
+        const imagePromptField =
+            document.getElementById(
+                "image_prompt"
+            );
+
+        const captionCounter =
+            document.getElementById(
+                "captionCounter"
+            );
+
+        const visualGuide =
+            document.getElementById(
+                "visualGuide"
+            );
+
+        const visualHeadline =
+            document.getElementById(
+                "visualHeadline"
+            );
+
+        const photoDirection =
+            document.getElementById(
+                "photoDirection"
+            );
+
+        const visualBrief =
+            document.getElementById(
+                "visualBrief"
+            );
+
+        const validationNotes =
+            document.getElementById(
+                "validationNotes"
+            );
+
+        const visualImagePreview =
+            document.getElementById(
+                "visualImagePreview"
+            );
+
+        const visualSourceStatus =
+            document.getElementById(
+                "visualSourceStatus"
+            );
+
+        const visualSourceMessage =
+            document.getElementById(
+                "visualSourceMessage"
+            );
+
+        const visualSourceLink =
+            document.getElementById(
+                "visualSourceLink"
+            );
+
+        const visualLicense =
+            document.getElementById(
+                "visualLicense"
+            );
+
+        const renderVisualButton =
+            document.getElementById(
+                "renderInstagramVisual"
+            );
+
+        const generatedVisualContainer =
+            document.getElementById(
+                "generatedVisualContainer"
+            );
+
+        const generatedVisualPreview =
+            document.getElementById(
+                "generatedVisualPreview"
+            );
+
+        const downloadGeneratedVisual =
+            document.getElementById(
+                "downloadGeneratedVisual"
+            );
+
+        const visualRenderError =
+            document.getElementById(
+                "visualRenderError"
+            );
+
+
+        /*
+         * ==============================================
+         * CAPTION COUNTER
+         * ==============================================
+         */
+
+        function updateCaptionCounter() {
+
+            if (!captionField || !captionCounter) {
+                return;
+            }
+
+            captionCounter.textContent =
+                `${captionField.value.length} karakter`;
+
+        }
+
+
+        captionField?.addEventListener(
+            "input",
+            updateCaptionCounter
+        );
+
+        updateCaptionCounter();
+
+
+        function renderGeneratedVisual(imageUrl, errorMessage) {
+
+            if (visualRenderError) {
+                visualRenderError.textContent = errorMessage || "";
+                visualRenderError.classList.toggle(
+                    "d-none",
+                    !errorMessage
+                );
+            }
+
+            if (!imageUrl) {
+                return;
+            }
+
+            if (generatedVisualPreview) {
+                generatedVisualPreview.src = imageUrl;
+            }
+
+            if (downloadGeneratedVisual) {
+                downloadGeneratedVisual.href = imageUrl;
+            }
+
+            generatedVisualContainer?.classList.remove("d-none");
+
+        }
+
+
+        function renderVisualSource(source) {
+
+            if (!source) {
+                return;
+            }
+
+            const statusLabels = {
+                ready: "Yayına hazır",
+                attribution_required: "Atıf gerekli",
+                review_required: "Lisans kontrolü",
+                not_found: "Görsel bulunamadı"
+            };
+
+            if (visualSourceStatus) {
+                visualSourceStatus.textContent =
+                    statusLabels[source.status] || "Kontrol bekliyor";
+                visualSourceStatus.className =
+                    "badge " + (
+                        source.status === "ready" ? "text-bg-success" :
+                        source.status === "not_found" ? "text-bg-danger" :
+                        "text-bg-warning"
+                    );
+            }
+
+            if (visualSourceMessage) {
+                visualSourceMessage.textContent = source.message || "";
+            }
+
+            if (visualImagePreview) {
+                visualImagePreview.replaceChildren();
+                if (source.image_url) {
+                    const image = document.createElement("img");
+                    image.src = source.image_url;
+                    image.alt = "Otomatik seçilen haber görseli";
+                    image.className = "img-fluid rounded border";
+                    image.style.maxHeight = "220px";
+                    image.style.objectFit = "contain";
+                    visualImagePreview.append(image);
+                }
+            }
+
+            if (visualSourceLink) {
+                visualSourceLink.classList.toggle(
+                    "d-none",
+                    !source.source_url
+                );
+                visualSourceLink.href = source.source_url || "#";
+            }
+
+            if (visualLicense) {
+                visualLicense.replaceChildren();
+                if (source.license_name) {
+                    const license = document.createElement("div");
+                    license.textContent = "Lisans: " + source.license_name;
+                    visualLicense.append(license);
+                }
+                if (source.credit) {
+                    const credit = document.createElement("div");
+                    credit.textContent = "Atıf: " + source.credit;
+                    visualLicense.append(credit);
+                }
+            }
+
+        }
+
+
+        function renderVisualGuide(data) {
+
+            if (!visualGuide || !visualHeadline) {
+                return;
+            }
+
+            visualHeadline.textContent =
+                data.instagram_title ||
+                "";
+
+            photoDirection.textContent =
+                data.photo_direction ||
+                "Uygun görsel bulunamadı; yayın öncesi görsel gereklidir.";
+
+            visualBrief.textContent =
+                data.visual_brief || "";
+
+            validationNotes.replaceChildren();
+            (data.validation_notes || []).forEach(
+                function (note) {
+                    const item = document.createElement("li");
+                    item.textContent = note;
+                    validationNotes.append(item);
+                }
+            );
+
+            validationNotes.classList.toggle(
+                "d-none",
+                !validationNotes.children.length
+            );
+
+            renderVisualSource(data.visual_image);
+            renderGeneratedVisual(
+                data.generated_image,
+                data.visual_render_error
+            );
+
+        }
+
+
+        function setGenerationStatus(job, variant) {
+
+            const progress = Math.max(
+                0,
+                Math.min(100, Number(job?.progress) || 0)
+            );
+
+            statusBox?.classList.remove("d-none");
+            statusBox?.classList.remove(
+                "alert-info",
+                "alert-success",
+                "alert-danger"
+            );
+            statusBox?.classList.add(
+                variant === "success" ? "alert-success" :
+                variant === "danger" ? "alert-danger" :
+                "alert-info"
+            );
+
+            if (statusText) {
+                statusText.textContent = job?.message || "İşlem hazırlanıyor.";
+            }
+
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+                progressBar.setAttribute("aria-valuenow", String(progress));
+                progressBar.classList.toggle(
+                    "progress-bar-animated",
+                    variant === "info"
+                );
+            }
+
+            statusSpinner?.classList.toggle(
+                "d-none",
+                variant !== "info"
+            );
+
+        }
+
+
+        function fillGeneratedDraft(data) {
+
+            titleField.value = data.instagram_title || "";
+            captionField.value = data.instagram_caption || "";
+            hashtagsField.value = data.hashtags || "";
+            imagePromptField.value = data.image_prompt || "";
+
+            renderVisualGuide(data);
+            updateCaptionCounter();
+
+        }
+
+
+        function waitForJobUpdate() {
+            return new Promise(function (resolve) {
+                window.setTimeout(resolve, 1000);
+            });
+        }
+
+
+        async function waitForInstagramJob(job) {
+
+            let currentJob = job;
+
+            for (let attempt = 0; attempt < 900; attempt += 1) {
+
+                setGenerationStatus(currentJob, "info");
+
+                const response = await fetch(
+                    `/instagram/jobs/${currentJob.id}`,
+                    {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    }
+                );
+                const payload = await response.json();
+
+                if (!response.ok || !payload.success) {
+                    throw new Error(
+                        payload.message || "İşlem durumu alınamadı."
+                    );
+                }
+
+                currentJob = payload.job;
+
+                if (currentJob.status === "completed") {
+                    setGenerationStatus(currentJob, "success");
+                    return currentJob.result;
+                }
+
+                if (currentJob.status === "failed") {
+                    setGenerationStatus(currentJob, "danger");
+                    throw new Error(
+                        currentJob.message || "Instagram taslağı oluşturulamadı."
+                    );
+                }
+
+                await waitForJobUpdate();
+
+            }
+
+            throw new Error(
+                "İşlem beklenenden uzun sürdü. Sayfayı yenileyip taslağı kontrol edin."
+            );
+
+        }
+
+
+        /*
+         * ==============================================
+         * AI GENERATE
+         * ==============================================
+         */
+
+        generateButton?.addEventListener(
+            "click",
+            async function () {
+
+                const originalHTML =
+                    generateButton.innerHTML;
+
+
+                generateButton.disabled =
+                    true;
+
+
+                generateButton.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span>' +
+                    'İşlem Kuyrukta...';
+
+                setGenerationStatus(
+                    {
+                        progress: 5,
+                        message: "Instagram taslağı kuyruğa alınıyor."
+                    },
+                    "info"
+                );
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/instagram/{{ news.id }}/generate/start",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok ||
+                        !data.success) {
+
+                        throw new Error(
+                            data.message ||
+                            "Instagram AI üretimi başarısız."
+                        );
+
+                    }
+
+
+                    const draft = await waitForInstagramJob(data.job);
+                    fillGeneratedDraft(draft.data);
+
+
+                    /*
+                     * ==================================
+                     * BAŞARI
+                     * ==================================
+                     */
+
+                    if (
+                        typeof showToast ===
+                        "function"
+                    ) {
+
+                        showToast(
+                            "Başarılı",
+                            draft.message ||
+                            "Instagram taslağı oluşturuldu.",
+                            "success"
+                        );
+
+                    } else {
+
+                        alert(
+                            data.message ||
+                            "Instagram içeriği oluşturuldu."
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ Instagram AI:",
+                        error
+                    );
+
+                    setGenerationStatus(
+                        {
+                            progress: 100,
+                            message: error.message ||
+                                "Instagram içeriği oluşturulamadı."
+                        },
+                        "danger"
+                    );
+
+
+                    if (
+                        typeof showToast ===
+                        "function"
+                    ) {
+
+                        showToast(
+                            "Hata",
+                            error.message ||
+                            "Instagram içeriği oluşturulamadı.",
+                            "danger"
+                        );
+
+                    } else {
+
+                        alert(
+                            error.message ||
+                            "Instagram içeriği oluşturulamadı."
+                        );
+
+                    }
+
+
+                } finally {
+
+                    generateButton.innerHTML =
+                        originalHTML;
+
+                    generateButton.disabled =
+                        false;
+
+                }
+
+            }
+        );
+
+
+        renderVisualButton?.addEventListener(
+            "click",
+            async function () {
+
+                const originalHTML = renderVisualButton.innerHTML;
+                renderVisualButton.disabled = true;
+                renderVisualButton.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span>' +
+                    "Görsel Oluşturuluyor...";
+
+                try {
+                    const response = await fetch(
+                        "/instagram/{{ news.id }}/render",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: new URLSearchParams({
+                                instagram_title: titleField?.value || ""
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(
+                            data.message || "Instagram görseli oluşturulamadı."
+                        );
+                    }
+
+                    renderVisualSource(data.visual_image);
+                    renderGeneratedVisual(data.generated_image, null);
+
+                    if (typeof showToast === "function") {
+                        showToast("Başarılı", data.message, "success");
+                    }
+
+                } catch (error) {
+                    renderGeneratedVisual(null, error.message);
+                } finally {
+                    renderVisualButton.innerHTML = originalHTML;
+                    renderVisualButton.disabled = false;
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

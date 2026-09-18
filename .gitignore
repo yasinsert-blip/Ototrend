@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+news.db
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/ui-verification/
+logs/model-comparison*/
+logs/source-discovery/
+logs/
+dist/
+build/
+installer/payload/
+installer/vendor/
+installer/private/
+
+# Runtime outputs and local troubleshooting files
+app/static/generated/
+backups/
+*_debug.html
+fix_autoexpress.py
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test dosyaları (istersen bunları da ekleme)
+test_*.py
+
+# Otomatik testler proje kaynak kodudur; GitHub yedeğine dahil edilir.
+!tests/
+!tests/test_*.py

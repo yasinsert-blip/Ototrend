@@ -1,0 +1,29 @@
+<div class="small mt-2" aria-label="İşlem durumu">
+{% if news.ai_processed %}
+    <span>AI tamamlandı</span>
+{% elif news.status in ('new', 'ai_pending', 'ai_error') %}
+    {% if news.ai_run_started_at and not news.ai_run_finished_at %}
+    <span>AI işleniyor</span>
+    {% elif news.ai_next_retry_at %}
+    <span>AI yeniden deneme bekliyor</span>
+    {% else %}
+    <span>AI bekliyor</span>
+    {% endif %}
+{% endif %}
+{% if news.telegram_sent %}
+    <span> · Telegram gönderildi</span>
+{% elif news.turkish_telegram_pending %}
+    <span> · Telegram sırada</span>
+{% endif %}
+</div>
+{% if news.ai_run_started_at %}
+<details class="small mt-2">
+    <summary>Son AI işleminin ölçümleri</summary>
+    {% if news.ai_run_seconds is defined and news.ai_run_seconds is not none %}<div>İşlem: {{ news.ai_run_seconds }} saniye</div>{% endif %}
+    {% if news.ai_model_seconds is defined and news.ai_model_seconds is not none %}<div>Model: {{ news.ai_model_seconds }} saniye</div>{% endif %}
+    {% if news.ai_input_chars is defined and news.ai_input_chars is not none %}<div>Girdi: {{ news.ai_input_chars }} karakter</div>{% endif %}
+    {% if news.ai_queue_wait_seconds is defined and news.ai_queue_wait_seconds is not none %}<div>Kayıttan son işleme geçen süre: {{ news.ai_queue_wait_seconds }} saniye (önceki denemeler dahil)</div>{% endif %}
+    {% if news.status in ('ai_error', 'ai_failed') and news.ai_last_error %}<div>{{ news.ai_last_error }}</div>{% endif %}
+    <div>Durumlar sayfa yenilendiğinde güncellenir.</div>
+</details>
+{% endif %}

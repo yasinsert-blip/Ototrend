@@ -1,0 +1,62 @@
+{% set current = request.query_params %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="get" action="/editor" class="row g-3">
+            <input type="hidden" name="section" value="{{ current.get('section', 'all') }}">
+            <div class="col-xl-4 col-md-6">
+                <label for="news-search" class="form-label">Haber ara</label>
+                <input id="news-search" type="search" name="keyword" value="{{ current.get('keyword', '') }}" class="form-control" placeholder="Başlık, Türkçe özet veya kaynak…">
+            </div>
+            <div class="col-xl-2 col-md-6">
+                <label for="news-brand" class="form-label">Marka</label>
+                <select id="news-brand" class="form-select" name="brand">
+                    <option value="">Tümü</option>
+                    {% for brand in brands %}<option value="{{ brand }}" {% if current.get('brand') == brand %}selected{% endif %}>{{ brand }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-xl-2 col-md-6">
+                <label for="news-category" class="form-label">Kategori</label>
+                <select id="news-category" class="form-select" name="category">
+                    <option value="">Tümü</option>
+                    {% for category in categories %}<option value="{{ category }}" {% if current.get('category') == category %}selected{% endif %}>{{ category }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <label for="news-status" class="form-label">Durum</label>
+                <select id="news-status" class="form-select" name="status">
+                    <option value="">Tümü</option>
+                    {% for value, label in [('new', 'Yeni'), ('ai_pending', 'AI bekliyor'), ('ai_processed', 'AI işlendi'), ('ai_skipped', 'AI atlandı'), ('ai_error', 'AI yeniden denenecek'), ('ai_failed', 'AI manuel kontrol'), ('ai_ready', 'AI hazır'), ('editor_review', 'Editör incelemesi'), ('instagram_draft', 'Instagram taslağı'), ('instagram_ready', 'Instagram hazır'), ('scheduled', 'Planlandı'), ('published', 'Yayınlandı'), ('archived', 'Arşiv')] %}
+                    <option value="{{ value }}" {% if current.get('status') == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <label for="news-importance" class="form-label">En düşük önem puanı</label>
+                <select id="news-importance" name="min_importance" class="form-select">
+                    <option value="0">Tüm puanlar</option>
+                    {% for score in range(1, 11) %}<option value="{{ score }}" {% if current.get('min_importance', '0')|int == score %}selected{% endif %}>{{ score }} ve üzeri</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <label for="news-sort" class="form-label">Sıralama</label>
+                <select id="news-sort" name="sort" class="form-select">
+                    {% for value, label in [('newest', 'En yeni önce'), ('news_value', 'Türkiye odaklı haber değeri'), ('importance', 'AI önem puanı'), ('oldest', 'En eski önce')] %}
+                    <option value="{{ value }}" {% if current.get('sort', 'newest') == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label for="news-page-size" class="form-label">Sayfada</label>
+                <select id="news-page-size" name="page_size" class="form-select">
+                    {% for size in [20, 50, 100] %}<option value="{{ size }}" {% if current.get('page_size', '20')|int == size %}selected{% endif %}>{{ size }} haber</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-4 d-flex flex-wrap gap-2 align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrele</button>
+                <a href="/editor" class="btn btn-outline-secondary">Temizle</a>
+                <a href="/editor?sort=news_value" class="btn btn-outline-primary">Türkiye öncelikli</a>
+                <a href="/editor?status=ai_ready&amp;sort=importance" class="btn btn-outline-primary">İncelemeye hazır</a>
+            </div>
+        </form>
+    </div>
+</div>

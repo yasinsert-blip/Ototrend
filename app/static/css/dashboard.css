@@ -1,0 +1,246 @@
+/* ==========================================================
+   OtoTrend AI CMS
+   Dashboard Cards
+========================================================== */
+
+.dashboard-card {
+    position: relative;
+    overflow: hidden;
+    border: 0;
+    border-radius: 18px;
+    background: #ffffff;
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    transition: all .25s ease;
+    height: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 34px rgba(0,0,0,.12);
+}
+
+.dashboard-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 5px;
+}
+
+/* ==========================================================
+   Colors
+========================================================== */
+
+.dashboard-card.primary::before {
+    background: #0d6efd;
+}
+
+.dashboard-card.warning::before {
+    background: #ffc107;
+}
+
+.dashboard-card.info::before {
+    background: #0dcaf0;
+}
+
+.dashboard-card.success::before {
+    background: #198754;
+}
+
+.dashboard-card.secondary::before {
+    background: #6c757d;
+}
+
+.dashboard-card.dark::before {
+    background: #212529;
+}
+
+.dashboard-card.danger::before {
+    background: #dc3545;
+}
+
+/* ==========================================================
+   Typography
+========================================================== */
+
+.dashboard-card .label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.dashboard-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 10px 0 6px;
+    color: #212529;
+}
+
+.dashboard-card small {
+    color: #6c757d;
+    font-size: .80rem;
+}
+
+/* ==========================================================
+   Icons
+========================================================== */
+
+.dashboard-card .icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    transition: .25s;
+}
+
+/* Backgrounds */
+
+.dashboard-card.primary .icon {
+    background: rgba(13,110,253,.12);
+    color: #0d6efd;
+}
+
+.dashboard-card.warning .icon {
+    background: rgba(255,193,7,.15);
+    color: #d39e00;
+}
+
+.dashboard-card.info .icon {
+    background: rgba(13,202,240,.15);
+    color: #0dcaf0;
+}
+
+.dashboard-card.success .icon {
+    background: rgba(25,135,84,.12);
+    color: #198754;
+}
+
+.dashboard-card.secondary .icon {
+    background: rgba(108,117,125,.12);
+    color: #6c757d;
+}
+
+.dashboard-card.dark .icon {
+    background: rgba(33,37,41,.10);
+    color: #212529;
+}
+
+.dashboard-card.danger .icon {
+    background: rgba(220,53,69,.12);
+    color: #dc3545;
+}
+
+.dashboard-card:hover .icon {
+    transform: scale(1.08) rotate(-5deg);
+}
+
+/* ==========================================================
+   Table
+========================================================== */
+
+.table tbody tr {
+    transition: background .15s ease;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* ==========================================================
+   News Title
+========================================================== */
+
+.news-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ==========================================================
+   Buttons
+========================================================== */
+
+.btn-group .btn {
+    min-width: 36px;
+}
+
+.btn-group .btn i {
+    pointer-events: none;
+}
+
+/* ==========================================================
+   Badges
+========================================================== */
+
+.badge {
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .dashboard-card {
+        padding: 18px;
+    }
+
+    .dashboard-card .value {
+        font-size: 1.6rem;
+    }
+
+    .dashboard-card .icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+
+}
+
+@media (max-width: 576px) {
+
+    .dashboard-card {
+        padding: 16px;
+    }
+
+    .dashboard-card .value {
+        font-size: 1.45rem;
+    }
+
+    .dashboard-card .label {
+        font-size: .75rem;
+    }
+
+}
+
+.chart-container {
+    height: 290px;
+}
+
+.workflow-list .list-group-item {
+    border-color: var(--border);
+    padding: 1rem 1.25rem;
+}
+
+.dashboard-filters .form-label {
+    font-weight: 600;
+}
+
+.dashboard-filters .input-group-text {
+    border-right: 0;
+}
+
+.dashboard-filters .input-group .form-control {
+    border-left: 0;
+}

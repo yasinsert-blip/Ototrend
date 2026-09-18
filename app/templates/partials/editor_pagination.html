@@ -1,0 +1,16 @@
+{% if pagination %}
+<div class="d-flex flex-wrap gap-3 justify-content-between align-items-center my-3">
+    <span class="text-muted small" role="status">{{ pagination.total }} haberden {{ pagination.first }}–{{ pagination.last }} arası gösteriliyor. Toplu seçim bu sayfadaki haberler için geçerlidir.</span>
+    {% if pagination.total_pages > 1 %}
+    <nav aria-label="Haber sayfaları">
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item {% if not pagination.previous %}disabled{% endif %}">{% if pagination.previous %}<a class="page-link" href="{{ pagination.previous }}">Önceki</a>{% else %}<span class="page-link">Önceki</span>{% endif %}</li>
+            {% for link in pagination.links %}
+            <li class="page-item {% if link.number == pagination.page %}active{% endif %}"><a class="page-link" href="{{ link.url }}" {% if link.number == pagination.page %}aria-current="page"{% endif %}>{{ link.number }}</a></li>
+            {% endfor %}
+            <li class="page-item {% if not pagination.next %}disabled{% endif %}">{% if pagination.next %}<a class="page-link" href="{{ pagination.next }}">Sonraki</a>{% else %}<span class="page-link">Sonraki</span>{% endif %}</li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endif %}

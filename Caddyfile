@@ -1,0 +1,15 @@
+{
+    email {env.CADDY_EMAIL}
+}
+
+{env.DOMAIN} {
+    encode zstd gzip
+
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "same-origin"
+    }
+
+    reverse_proxy app:8000
+}

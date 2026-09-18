@@ -1,0 +1,326 @@
+/* ==========================================
+   OtoTrend AI CMS
+   Sidebar
+========================================== */
+
+:root {
+
+    --sidebar-width: 260px;
+
+    --sidebar-bg: #111827;
+
+    --sidebar-hover: #1f2937;
+
+    --sidebar-active: #2563eb;
+
+    --sidebar-text: #d1d5db;
+
+    --sidebar-muted: #9ca3af;
+
+    --border-color: #1f2937;
+
+}
+
+/* ==========================================
+   Sidebar
+========================================== */
+
+.sidebar {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: var(--sidebar-width);
+
+    height: 100vh;
+
+    background: var(--sidebar-bg);
+
+    border-right: 1px solid var(--border-color);
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    overflow-y: auto;
+
+    z-index: 1000;
+
+}
+
+/* ==========================================
+   Logo
+========================================== */
+
+.sidebar-logo {
+
+    padding: 28px 24px;
+
+    border-bottom: 1px solid var(--border-color);
+
+}
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    text-decoration: none;
+
+    color: white;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+.logo i {
+
+    font-size: 28px;
+
+    color: #3b82f6;
+
+}
+
+.sidebar-header .logo {
+
+    flex: 0 0 36px;
+
+}
+
+.sidebar-brand-logo {
+
+    display: block;
+
+    width: 100%;
+
+    height: 28px;
+
+    object-fit: contain;
+
+}
+
+/* ==========================================
+   Menu
+========================================== */
+
+.sidebar-menu {
+
+    list-style: none;
+
+    margin: 0;
+
+    padding: 20px 12px;
+
+}
+
+.sidebar-menu li {
+
+    margin-bottom: 8px;
+
+}
+
+.sidebar-menu a {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    color: var(--sidebar-text);
+
+    text-decoration: none;
+
+    transition: all .25s ease;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+}
+
+.sidebar-menu a i {
+
+    font-size: 20px;
+
+    width: 24px;
+
+    text-align: center;
+
+}
+
+/* Hover */
+
+.sidebar-menu a:hover {
+
+    background: var(--sidebar-hover);
+
+    color: white;
+
+    transform: translateX(4px);
+
+}
+
+/* Active */
+
+.sidebar-menu a.active {
+
+    background: var(--sidebar-active);
+
+    color: white;
+
+    font-weight: 600;
+
+}
+
+.sidebar-menu a.active i {
+
+    color: white;
+
+}
+
+/* ==========================================
+   Footer
+========================================== */
+
+.sidebar-footer {
+
+    padding: 20px;
+
+    border-top: 1px solid var(--border-color);
+
+}
+
+.version {
+
+    text-align: center;
+
+}
+
+.version small {
+
+    display: block;
+
+    color: var(--sidebar-muted);
+
+    margin-bottom: 4px;
+
+}
+
+.version strong {
+
+    color: white;
+
+    font-size: 15px;
+
+}
+
+/* ==========================================
+   Main Content
+========================================== */
+
+.main-content {
+
+    margin-left: var(--sidebar-width);
+
+    min-height: 100vh;
+
+}
+
+/* ==========================================
+   Scrollbar
+========================================== */
+
+.sidebar::-webkit-scrollbar {
+
+    width: 6px;
+
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+
+    background: #374151;
+
+    border-radius: 20px;
+
+}
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width: 992px) {
+
+    .sidebar {
+
+        width: 80px;
+
+    }
+
+    .sidebar .logo span,
+
+    .sidebar-menu span,
+
+    .version {
+
+        display: none;
+
+    }
+
+    .sidebar-header {
+
+        justify-content: center;
+
+        padding: 16px 10px;
+
+    }
+
+    .sidebar-header .logo {
+
+        flex-basis: 28px;
+
+    }
+
+    .sidebar-brand-logo {
+
+        height: 20px;
+
+    }
+
+    .sidebar-menu a {
+
+        justify-content: center;
+
+        padding: 16px;
+
+    }
+
+    .sidebar-menu a i {
+
+        margin: 0;
+
+        font-size: 22px;
+
+    }
+
+    .main-content {
+
+        margin-left: 80px;
+
+    }
+
+}

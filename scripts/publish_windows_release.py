@@ -4,10 +4,12 @@ Uses the configured Git credential helper; never prints its credential.
 The separate --publish flag is required to expose an already uploaded draft.
 """
 import argparse
+import io
 import json
 from pathlib import Path
 import subprocess
 import sys
+import time
 from urllib.parse import quote
 
 import requests
@@ -15,6 +17,22 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'installer/desktop'))
 from bundle import REPOSITORY, read_manifest, sha256
+
+
+class UploadFile(io.BufferedReader):
+    """Stream large assets without loading them into RAM; report bounded progress."""
+    def __init__(self, path):
+        super().__init__(io.FileIO(path, 'r'))
+        self.label = path.name
+        self.total = path.stat().st_size
+        self.last_report = time.monotonic()
+
+    def read(self, size=-1):
+        block = super().read(size)
+        if time.monotonic() - self.last_report >= 20 or not block:
+            print(f'{self.label}: {self.tell() / self.total:.0%}', flush=True)
+            self.last_report = time.monotonic()
+        return block
 
 
 def credentials():
@@ -48,7 +66,8 @@ def main():
     session.headers.update(Authorization='Bearer ' + credentials(), Accept='application/vnd.github+json', **{'X-GitHub-Api-Version': '2022-11-28'})
     api = f'https://api.github.com/repos/{REPOSITORY}'
     def request(method, url, **kwargs):
-        response = session.request(method, url, timeout=(20, 1800), **kwargs)
+        timeout = kwargs.pop('timeout', (20, 1800))
+        response = session.request(method, url, timeout=timeout, **kwargs)
         if not response.ok:
             raise RuntimeError('GitHub request failed: HTTP ' + str(response.status_code))
         return response.json() if response.content else None
@@ -80,8 +99,8 @@ def main():
             raise ValueError('Missing draft asset: ' + name)
         print('Uploading: ' + name, flush=True)
         url = f'https://uploads.github.com/repos/{REPOSITORY}/releases/{release["id"]}/assets?name=' + quote(name)
-        with path.open('rb') as stream:
-            uploaded = request('POST', url, data=stream, headers={'Content-Type': 'application/octet-stream', 'Content-Length': str(path.stat().st_size)})
+        with UploadFile(path) as stream:
+            uploaded = request('POST', url, data=stream, timeout=(180, 1800), headers={'Content-Type': 'application/octet-stream', 'Content-Length': str(path.stat().st_size)})
         if uploaded.get('digest') != digest:
             raise ValueError('Remote checksum mismatch: ' + name)
     if args.publish:

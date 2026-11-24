@@ -11,6 +11,22 @@ import urllib.request
 from bundle import REPOSITORY, read_manifest, fetch, current, component_path, install_components, activate, sha256
 
 
+def refresh_launcher(root, application):
+    """Refresh the user-facing control program from the signed application component."""
+    source = application / 'desktop' / 'OtoTrend.exe'
+    if not source.exists():
+        return
+    target = Path(root) / 'OtoTrend.exe'
+    temporary = target.with_name('OtoTrend.exe.new')
+    import shutil
+    try:
+        shutil.copy2(source, temporary)
+        os.replace(temporary, target)
+    except OSError:
+        # A still-open control window can keep the executable locked on Windows.
+        temporary.unlink(missing_ok=True)
+
+
 def stage_update(root, key):
     installed = current(root, key)
     latest = json.loads(fetch(f'https://api.github.com/repos/{REPOSITORY}/releases/latest', 512 * 1024))
@@ -101,6 +117,7 @@ def apply_pending(root, key):
                 with closing(sqlite3.connect(backup)) as src, closing(sqlite3.connect(dbpath)) as dst:
                     src.backup(dst)
             raise
+    refresh_launcher(root, application)
     activate(root, raw, signature)
     pending.unlink()
     return True

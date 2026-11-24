@@ -214,7 +214,7 @@ def main():
             out.write(path, name)
     subprocess.run([str(CSC), '/nologo', '/target:winexe', '/out:' + str(output / 'Setup.exe'), '/reference:System.Windows.Forms.dll', '/reference:System.Drawing.dll', '/reference:System.IO.Compression.dll', '/reference:System.IO.Compression.FileSystem.dll',
                     '/resource:' + str(bootstrap) + ',bootstrap.zip', '/resource:' + str(terms) + ',terms.txt', str(ROOT / 'installer' / 'Setup.cs')], check=True)
-    (output / 'KURULUM.txt').write_text('Tüm dosyaları aynı klasöre indirin ve Setup.exe dosyasını çalıştırın.\nWindows 10 22H2 / Windows 11 x64, CPU çalışması. En az 15 GB boş alan önerilir.\nKurulum ve model çevrimdışı kullanılabilir; haber taraması ve Telegram için internet gerekir.\nBaşlat menüsü: OtoTrend AI; kapatmak için OtoTrend AI - Kapat.\nTarayıcıyı kapatmak haber taramasını durdurmaz.\nGüncellemeler arka planda iner ve sonraki uygulama açılışında otomatik uygulanır.\nSmartScreen uyarısı görülebilir; Windows yayıncı sertifikası yoktur.\n', encoding='utf-8')
+    (output / 'KURULUM.txt').write_text('Tüm dosyaları aynı klasöre indirin ve Setup.exe dosyasını çalıştırın.\nWindows 10 22H2 / Windows 11 x64, CPU çalışması. En az 15 GB boş alan önerilir.\nKurulum ve model çevrimdışı kullanılabilir; haber taraması ve Telegram için internet gerekir.\nBaşlat menüsündeki OtoTrend AI Kontrol Merkezi ile programın durumunu görün, başlatın veya güvenle kapatın.\nTarayıcıyı kapatmak haber taramasını durdurmaz.\nGüncellemeler arka planda iner ve sonraki uygulama açılışında otomatik uygulanır.\nSmartScreen uyarısı görülebilir; Windows yayıncı sertifikası yoktur.\n', encoding='utf-8')
     print('Release built: ' + str(output), flush=True)
 
 

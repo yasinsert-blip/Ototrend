@@ -79,6 +79,18 @@ class DesktopBundleTests(unittest.TestCase):
                 bundle.install_components(root / 'install', root, {'components': {'application': component}}, lambda _: None)
             self.assertFalse((root / 'install' / 'current.json').exists())
 
+    def test_update_refreshes_control_program(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            application = root / 'versions' / 'application-new'
+            source = application / 'desktop' / 'OtoTrend.exe'
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b'new-control-program')
+            (root / 'OtoTrend.exe').write_bytes(b'old-control-program')
+            updater.refresh_launcher(root, application)
+            self.assertEqual((root / 'OtoTrend.exe').read_bytes(), b'new-control-program')
+            self.assertFalse((root / 'OtoTrend.exe.new').exists())
+
     def test_invalid_signature_rejected(self):
         public = Path(__file__).resolve().parents[1] / 'installer/desktop/public-key.xml'
         with self.assertRaises(ValueError):

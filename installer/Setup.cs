@@ -39,7 +39,7 @@ class Setup : Form {
                         if(process.ExitCode!=0) throw new Exception("Kurulum tamamlanamadı; açıklamayı kontrol edin.");
                     }
                 });
-                MessageBox.Show("Kurulum tamamlandı. Başlat menüsünden OtoTrend AI'ı açabilirsiniz.");
+                MessageBox.Show("Kurulum tamamlandı. Başlat menüsündeki OtoTrend AI Kontrol Merkezi ile programı başlatıp kapatabilirsiniz.");
             } catch(Exception error) { MessageBox.Show(error.Message,"Kurulum hatası"); }
             finally { busy=false; install.Enabled=true; accept.Enabled=true; try { Directory.Delete(temp,true); } catch {} }
         };

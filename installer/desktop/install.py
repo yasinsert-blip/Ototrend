@@ -31,7 +31,7 @@ def main():
     if not args.no_shortcuts:
         import os
         env = dict(os.environ, OTOTREND_INSTALL_ROOT=str(root))
-        script = "$rootPath=$env:OTOTREND_INSTALL_ROOT; $shell=New-Object -ComObject WScript.Shell; $link=$shell.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Programs'),'OtoTrend AI.lnk')); $link.TargetPath=[IO.Path]::Combine($rootPath,'OtoTrend.exe'); $link.WorkingDirectory=$rootPath; $link.Save(); $stop=$shell.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Programs'),'OtoTrend AI - Kapat.lnk')); $stop.TargetPath=$link.TargetPath; $stop.Arguments='--stop'; $stop.Save()"
+        script = "$rootPath=$env:OTOTREND_INSTALL_ROOT; $shell=New-Object -ComObject WScript.Shell; $link=$shell.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Programs'),'OtoTrend AI Kontrol Merkezi.lnk')); $link.TargetPath=[IO.Path]::Combine($rootPath,'OtoTrend.exe'); $link.WorkingDirectory=$rootPath; $link.Save(); $legacy=$shell.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Programs'),'OtoTrend AI.lnk')); $legacy.TargetPath=$link.TargetPath; $legacy.WorkingDirectory=$rootPath; $legacy.Save(); $stop=$shell.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Programs'),'OtoTrend AI - Kapat.lnk')); $stop.TargetPath=$link.TargetPath; $stop.Arguments='--stop'; $stop.Save()"
         subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script], env=env, check=True, creationflags=0x08000000)
     print('Kurulum tamamlandı. OtoTrend.exe ile açabilirsiniz.', flush=True)
 
